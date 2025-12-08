@@ -1,1 +1,19 @@
 @import "tailwindcss";
+
+:root {
+  --color-primary: #fd1515e0; /* indigo-600 default; change to your preferred hex */
+  --text-primary: #ffffff; /* white default; change to your preferred hex */
+  --text-secondary: #a1a1aa; /* gray-400 default; change to your preferred hex */
+}
+
+/* Optional: small base rules so pages default to consistent layout */
+@layer base {
+  html, body {
+    height: 100%;
+  }
+  body {
+    /* Keep global background handling here if desired */
+    /* background: #0b0b0d; */
+    /* color: #ffffff; */
+  }
+}
