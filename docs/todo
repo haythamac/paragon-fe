@@ -1,6 +1,6 @@
 TODO LIST:
 
-- add dropdown to events (guild raffle for now)
+[DONE] add dropdown to events (guild raffle for now)
 - add a new page for guild raffle
 - invetory system for clan warehouse
 - raffle duck race
@@ -10,3 +10,20 @@ TODO LIST:
 
 
 - create discord bot that tracks folkvang boss spawn every 8 hours
+
+
+installed packages:
+tailwind
+shadcn vue
+vue-router@4
+
+
+added import path from 'path' to vite.config.js
+resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+    },
+  },
+
+we do this so we can use the @ when referencing paths like so
+'@/views/Raffle.vue'
