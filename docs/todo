@@ -1,7 +1,7 @@
 TODO LIST:
 
 [DONE] add dropdown to events (guild raffle for now)
-- add a new page for guild raffle
+[DONE] add a new page for guild raffle
 - invetory system for clan warehouse
 - raffle duck race
 - deduct inventory to winners
@@ -11,6 +11,7 @@ TODO LIST:
 
 - create discord bot that tracks folkvang boss spawn every 8 hours
 
+December 9, 2025
 
 installed packages:
 tailwind
@@ -27,3 +28,7 @@ resolve: {
 
 we do this so we can use the @ when referencing paths like so
 '@/views/Raffle.vue'
+
+- created a guild raffle page with filter panel, admin panel, and card list for all the raffles
+
+===================================================================================================
