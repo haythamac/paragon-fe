@@ -32,3 +32,11 @@ we do this so we can use the @ when referencing paths like so
 - created a guild raffle page with filter panel, admin panel, and card list for all the raffles
 
 ===================================================================================================
+
+December 12, 2025
+- changed the hrefs to router-link
+
+===================================================================================================
+
+December 17, 2025
+- 
