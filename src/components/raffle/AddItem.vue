@@ -1,12 +1,42 @@
 <script setup lang="ts">
-import { ref, computed, toRef } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useSlots } from 'vue'
 import FieldInput from '../common/FieldInput.vue';
 import Dropdown from '../common/Dropdown.vue';
 
+import { categoryAPI } from '@/services/categoryAPI'
+import { itemAPI } from '@/services/itemAPI'
+
+const categories = ref([])
+const loading = ref(false)
+const error = ref(null)
+
+onMounted(async () => {
+  try {
+    const response = await categoryAPI.getAll()
+    categories.value = response.data
+  } catch (error) {
+    console.error(error)
+  } finally {
+    loading.value = false
+  }
+})
+
+const categoryOptions = computed(() => {
+  return categories.value.map(cat => ({
+    label: cat.name
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' '),
+    value: cat.id,
+  }))
+})
+
 const props = defineProps<{ modelValue?: boolean }>()
 const emit = defineEmits(['update:modelValue'])
 
+const selectedRarity = ref('')
+const selectedCategory = ref('')
 const internalOpen = ref(false)
 const isControlled = computed(() => props.modelValue !== undefined)
 const open = computed<boolean>({
@@ -23,12 +53,18 @@ function close() {
     open.value = false
 }
 
-function handleSubmit(e: Event) {
-    e.preventDefault()
-    const form = e.target as HTMLFormElement
-    const data = Object.fromEntries(new FormData(form).entries())
-    console.log('AddItem submit', data)
+async function handleSubmit(e: Event) {
+  e.preventDefault()
+
+  const form = e.target as HTMLFormElement
+  const formData = new FormData(form)
+
+  try {
+    await itemAPI.store(formData)
     close()
+  } catch (error) {
+    console.error('Failed to save item:', error)
+  }
 }
 
 const slots = useSlots()
@@ -59,15 +95,24 @@ const slots = useSlots()
                                 required>
                             </field-input>
 
-                            <dropdown> </dropdown>
+                            <Dropdown label="Rarity" name="rarity" v-model="selectedRarity" :options="[
+                                { label: 'Common', value: 'common', color: 'rarity-common' },
+                                { label: 'Uncommon', value: 'uncommon', color: 'rarity-uncommon' },
+                                { label: 'Rare', value: 'rare', color: 'rarity-rare' },
+                                { label: 'Epic', value: 'epic', color: 'rarity-epic' },
+                                { label: 'Legendary', value: 'legendary', color: 'rarity-legendary' },
+                            ]" placeholder="Select rarity" required />
 
-                            <dropdown label="Rarity" name="rarity" :options="[
-                                { label: 'Common', value: 'common' },
-                                { label: 'Uncommon', value: 'uncommon' },
-                                { label: 'Rare', value: 'rare' },
-                                { label: 'Epic', value: 'epic' },
-                                { label: 'Legendary', value: 'legendary' },
-                            ]" placeholder="Select rarity" required> </dropdown>
+                            <Dropdown 
+                                v-if="!loading"
+                                label="Category" 
+                                name="category" 
+                                v-model="selectedCategory" 
+                                :options="categoryOptions"
+                                placeholder="Select category" 
+                                required 
+                            />
+                            <div v-else class="text-sm text-gray-400">Loading categories...</div>
 
                             <div class="flex justify-end gap-2 pt-2">
                                 <button type="button"

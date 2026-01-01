@@ -12,6 +12,11 @@ const routes = [
     name: 'raffle',
     // Lazy loading for better performance
     component: () => import('@/views/Raffle.vue')
+  },
+  {
+    path: '/test-categories',
+    name: 'TestCategories',
+    component: () => import('@/views/TestCategories.vue')
   }
 ]
 
