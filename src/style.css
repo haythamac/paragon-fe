@@ -3,6 +3,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@plugin "tailwindcss-animate";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
 :root {
   --color-primary: #fd1515e0; /* indigo-600 default; change to your preferred hex */
   --text-primary: #ffffff; /* white default; change to your preferred hex */
