@@ -1,8 +1,9 @@
 <script setup>
-import LandingPage from './views/LandingPage.vue'
+import { Toaster  } from '@/components/ui/sonner'
 </script>
 
 <template>
+  <Toaster /> 
   <router-view />
 </template>
 

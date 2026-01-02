@@ -1,8 +1,8 @@
-<script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useSlots } from 'vue'
-import FieldInput from '../common/FieldInput.vue';
-import Dropdown from '../common/Dropdown.vue';
+<script setup>
+import { ref, computed, onMounted, useSlots } from 'vue'
+import FieldInput from '../common/FieldInput.vue'
+import Dropdown from '../common/Dropdown.vue'
+import { toast } from 'vue-sonner'
 
 import { categoryAPI } from '@/services/categoryAPI'
 import { itemAPI } from '@/services/itemAPI'
@@ -12,11 +12,13 @@ const loading = ref(false)
 const error = ref(null)
 
 onMounted(async () => {
+  loading.value = true
   try {
     const response = await categoryAPI.getAll()
     categories.value = response.data
-  } catch (error) {
-    console.error(error)
+  } catch (err) {
+    console.error(err)
+    error.value = err
   } finally {
     loading.value = false
   }
@@ -32,38 +34,52 @@ const categoryOptions = computed(() => {
   }))
 })
 
-const props = defineProps<{ modelValue?: boolean }>()
+const props = defineProps({
+  modelValue: {
+    type: Boolean,
+    default: false,
+  },
+})
+
 const emit = defineEmits(['update:modelValue'])
 
 const selectedRarity = ref('')
 const selectedCategory = ref('')
 const internalOpen = ref(false)
+
 const isControlled = computed(() => props.modelValue !== undefined)
-const open = computed<boolean>({
-    get() {
-        return isControlled.value ? !!props.modelValue : internalOpen.value
-    },
-    set(v: boolean) {
-        if (isControlled.value) emit('update:modelValue', v)
-        else internalOpen.value = v
-    },
+
+const open = computed({
+  get() {
+    return isControlled.value ? !!props.modelValue : internalOpen.value
+  },
+  set(v) {
+    if (isControlled.value) {
+      emit('update:modelValue', v)
+    } else {
+      internalOpen.value = v
+    }
+  },
 })
 
 function close() {
-    open.value = false
+  open.value = false
 }
 
-async function handleSubmit(e: Event) {
+async function handleSubmit(e) {
   e.preventDefault()
 
-  const form = e.target as HTMLFormElement
+  const form = e.target
   const formData = new FormData(form)
 
   try {
     await itemAPI.store(formData)
-    close()
-  } catch (error) {
-    console.error('Failed to save item:', error)
+    toast.success("Item saved successfully")
+    console.log("yes");
+    form.reset()
+  } catch (err) {
+    console.error('Failed to save item:', err)
+    toast.error("Item did not save")
   }
 }
 
@@ -71,7 +87,15 @@ const slots = useSlots()
 </script>
 
 <template>
-    <div>
+    <div> 
+
+        <button
+            class="px-3 py-2 rounded-md border border-gray-700 text-sm bg-gray-800 text-white hover:bg-gray-700"
+            @click="() => toast('My first toast')">
+            Give me a toast
+        </button>
+
+
         <button v-if="!isControlled" type="button"
             class="px-3 py-2 rounded-md border border-gray-700 text-sm bg-gray-800 text-white hover:bg-gray-700"
             @click="open = true">
