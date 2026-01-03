@@ -67,21 +67,36 @@ function close() {
 }
 
 async function handleSubmit(e) {
-  e.preventDefault()
+  e.preventDefault();
 
-  const form = e.target
-  const formData = new FormData(form)
+  const form = e.target;
+  const formData = new FormData(form);
 
   try {
-    await itemAPI.store(formData)
-    toast.success("Item saved successfully")
-    console.log("yes");
-    form.reset()
+    console.log(formData);
+    await itemAPI.store(formData);
+    toast.success("Item saved successfully");
+    form.reset();
   } catch (err) {
-    console.error('Failed to save item:', err)
-    toast.error("Item did not save")
+    console.error("Failed to save item:", err);
+
+    if (err.response && err.response.status === 422) {
+      // Laravel validation error
+      const errors = err.response.data.errors;
+
+      // Example: show first itemName error if it exists
+      if (errors.itemName) {
+        toast.error(errors.itemName[0]);
+      } else {
+        toast.error("Validation failed");
+      }
+    } else {
+      // Fallback for other errors (500, network, etc.)
+      toast.error("Item did not save");
+    }
   }
 }
+
 
 const slots = useSlots()
 </script>

@@ -28,7 +28,7 @@ api.interceptors.response.use(
   (response) => {
     return response;
   },
-  (error) => {
+  (error) => {  
     // Handle common errors
     if (error.response) {
       switch (error.response.status) {
