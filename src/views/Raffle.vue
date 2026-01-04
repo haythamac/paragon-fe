@@ -4,6 +4,7 @@ import NavBar from '@/components/layout/NavBar.vue'
 import FilterSidebar from '@/components/raffle/FilterSidebar.vue'
 import RaffleCard from '@/components/raffle/RaffleCard.vue'
 import AdminPanel from '@/components/raffle/AdminPanel.vue'
+import InventoryItem from '@/components/raffle/InventoryItem.vue'
 
 const showFilters = ref(false)
 
@@ -57,6 +58,15 @@ const raffles = ref([
               :joined="r.joined"
               :status="r.status"
             />
+          </div>
+
+          <div class="space-y-4">
+            <InventoryItem
+              itemName="Epic Sword of Testing"
+              description="A powerful sword used for testing purposes."
+              rarity="epic"
+              :quantity="3"
+              image="https://via.placeholder.com/150"/>
           </div>
         </div>
       </main>

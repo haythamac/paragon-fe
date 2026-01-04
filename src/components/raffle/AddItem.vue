@@ -103,14 +103,6 @@ const slots = useSlots()
 
 <template>
     <div> 
-
-        <button
-            class="px-3 py-2 rounded-md border border-gray-700 text-sm bg-gray-800 text-white hover:bg-gray-700"
-            @click="() => toast('My first toast')">
-            Give me a toast
-        </button>
-
-
         <button v-if="!isControlled" type="button"
             class="px-3 py-2 rounded-md border border-gray-700 text-sm bg-gray-800 text-white hover:bg-gray-700"
             @click="open = true">
