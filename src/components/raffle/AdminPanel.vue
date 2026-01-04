@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import AddItem from './AddItem.vue'
+import Inventory from './Inventory.vue';
 
 const showAdd = ref(false)
 </script>
@@ -16,5 +17,6 @@ const showAdd = ref(false)
     </div>
 
     <AddItem v-model="showAdd" />
+    <Inventory v-model="showInventory" />
   </div>
 </template>
