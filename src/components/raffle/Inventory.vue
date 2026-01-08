@@ -122,15 +122,36 @@ const slots = useSlots()
                         aria-labelledby="dialog-title">
                         <h2 id="dialog-title" class="text-lg font-semibold text-white">Inventory</h2>
                         <p class="text-sm text-gray-400 mb-4">All items are listed here.</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[60vh] overflow-y-auto">
+                          
+                          <InventoryItem
+                          itemName="Epic Sword of Testing"
+                          description="A powerful sword used for testing purposes."
+                          rarity="epic"
+                          category="Weapon"
+                          :quantity="3"
+                          image="https://placehold.co/150"/>
 
-                        <InventoryItem
-                            itemName="Epic Sword of Testing"
-                            description="A powerful sword used for testing purposes."
-                            rarity="epic"
-                            category="Weapon"
-                            :quantity="3"
-                            image="https://via.placeholder.com/150"/>
-                    </div>
+                          <InventoryItem
+                          itemName="Epic Sword of Testing"
+                          description="A powerful sword used for testing purposes."
+                          rarity="epic"
+                          category="Weapon"
+                          :quantity="3"
+                          image="https://placehold.co/150"/>
+
+                          <InventoryItem
+                          itemName="Epic Sword of Testing"
+                          description="A powerful sword used for testing purposes."
+                          rarity="epic"
+                          category="Weapon"
+                          :quantity="3"
+                          image="https://placehold.co/150"/>
+                          
+                        </div>
+
+                      </div>
                 </div>
             </transition>
         </teleport>
