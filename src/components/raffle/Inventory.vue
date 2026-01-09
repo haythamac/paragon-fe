@@ -1,22 +1,23 @@
 <script setup>
 import { ref, computed, onMounted, useSlots } from 'vue'
-import FieldInput from '../common/FieldInput.vue'
-import Dropdown from '../common/Dropdown.vue'
-import { toast } from 'vue-sonner'
 
 import { categoryAPI } from '@/services/categoryAPI'
 import { itemAPI } from '@/services/itemAPI'
 import InventoryItem from './InventoryItem.vue'
 
 const categories = ref([])
+const items = ref([])
 const loading = ref(false)
 const error = ref(null)
 
 onMounted(async () => {
   loading.value = true
   try {
-    const response = await categoryAPI.getAll()
-    categories.value = response.data
+    const categoryResponse = await categoryAPI.getAll()
+    categories.value = categoryResponse.data
+
+    const itemResponse = await itemAPI.getAll()
+    items.value = itemResponse.data
   } catch (err) {
     console.error(err)
     error.value = err
@@ -25,14 +26,15 @@ onMounted(async () => {
   }
 })
 
-const categoryOptions = computed(() => {
-  return categories.value.map(cat => ({
-    label: cat.name
+const categoryMap = computed(() => {
+  const map = {}
+  categories.value.forEach(cat => {
+    map[cat.id] = cat.name
       .split(' ')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' '),
-    value: cat.id,
-  }))
+      .join(' ')
+  })
+  return map
 })
 
 const props = defineProps({
@@ -43,9 +45,6 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue'])
-
-const selectedRarity = ref('')
-const selectedCategory = ref('')
 const internalOpen = ref(false)
 
 const isControlled = computed(() => props.modelValue !== undefined)
@@ -66,38 +65,6 @@ const open = computed({
 function close() {
   open.value = false
 }
-
-async function handleSubmit(e) {
-  e.preventDefault();
-
-  const form = e.target;
-  const formData = new FormData(form);
-
-  try {
-    console.log(formData);
-    await itemAPI.store(formData);
-    toast.success("Item saved successfully");
-    form.reset();
-  } catch (err) {
-    console.error("Failed to save item:", err);
-
-    if (err.response && err.response.status === 422) {
-      // Laravel validation error
-      const errors = err.response.data.errors;
-
-      // Example: show first itemName error if it exists
-      if (errors.itemName) {
-        toast.error(errors.itemName[0]);
-      } else {
-        toast.error("Validation failed");
-      }
-    } else {
-      // Fallback for other errors (500, network, etc.)
-      toast.error("Item did not save");
-    }
-  }
-}
-
 
 const slots = useSlots()
 </script>
@@ -126,28 +93,12 @@ const slots = useSlots()
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[60vh] overflow-y-auto">
                           
                           <InventoryItem
-                          itemName="Epic Sword of Testing"
-                          description="A powerful sword used for testing purposes."
-                          rarity="epic"
-                          category="Weapon"
-                          :quantity="3"
-                          image="https://placehold.co/150"/>
-
-                          <InventoryItem
-                          itemName="Epic Sword of Testing"
-                          description="A powerful sword used for testing purposes."
-                          rarity="epic"
-                          category="Weapon"
-                          :quantity="3"
-                          image="https://placehold.co/150"/>
-
-                          <InventoryItem
-                          itemName="Epic Sword of Testing"
-                          description="A powerful sword used for testing purposes."
-                          rarity="epic"
-                          category="Weapon"
-                          :quantity="3"
-                          image="https://placehold.co/150"/>
+                          v-for="item in items"
+                          :key="item.id"
+                          :itemName="item.name"
+                          :rarity="item.rarity"
+                          :category="categoryMap[item.item_category_id]"
+                          :image="item.image || 'https://placehold.co/150?text=Weapon'" />
                           
                         </div>
 
