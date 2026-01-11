@@ -8,6 +8,12 @@ const routes = [
     component: LandingPage
   },
   {
+    path: '/members',
+    name: 'members',
+    // Lazy loading for better performance
+    component: () => import('@/views/Members.vue')
+  },
+  {
     path: '/events/raffle',
     name: 'raffle',
     // Lazy loading for better performance
