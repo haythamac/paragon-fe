@@ -39,34 +39,8 @@ const categoryMap = computed(() => {
   return map
 })
 
-const props = defineProps({
-  modelValue: {
-    type: Boolean,
-    default: false,
-  },
-})
-
-const emit = defineEmits(['update:modelValue'])
-const internalOpen = ref(false)
-
-const isControlled = computed(() => props.modelValue !== undefined)
-
-const open = computed({
-  get() {
-    return isControlled.value ? !!props.modelValue : internalOpen.value
-  },
-  set(v) {
-    if (isControlled.value) {
-      emit('update:modelValue', v)
-    } else {
-      internalOpen.value = v
-    }
-  },
-})
-
+// Filtered items based on search query
 const filteredItems = computed(() => {
-  console.log('Filtering items with query:', searchQuery.value)
-
   if (!searchQuery.value) {
     return items.value
   }
@@ -76,26 +50,16 @@ const filteredItems = computed(() => {
   )
 })
 
-function close() {
-  open.value = false
-}
-
-const slots = useSlots()
+const props = defineProps(['modelValue'])
+const emit = defineEmits(['update:modelValue'])
+const close = () => emit('update:modelValue', false)
 </script>
 
 <template>
     <div> 
-
-
-        <button v-if="!isControlled" type="button"
-            class="px-3 py-2 rounded-md border border-gray-700 text-sm bg-gray-800 text-white hover:bg-gray-700"
-            @click="open = true">
-            Add Item
-        </button>
-
         <teleport to="body">
             <transition name="fade">
-                <div v-if="open" class="fixed inset-0 z-50 flex items-center justify-center p-4" aria-hidden="false">
+                <div v-if="modelValue" class="fixed inset-0 z-50 flex items-center justify-center p-4" aria-hidden="false">
                     <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" @click.self="close"></div>
 
                     <div role="dialog" aria-modal="true"

@@ -34,37 +34,9 @@ const categoryOptions = computed(() => {
   }))
 })
 
-const props = defineProps({
-  modelValue: {
-    type: Boolean,
-    default: false,
-  },
-})
-
-const emit = defineEmits(['update:modelValue'])
-
 const selectedRarity = ref('')
 const selectedCategory = ref('')
-const internalOpen = ref(false)
 
-const isControlled = computed(() => props.modelValue !== undefined)
-
-const open = computed({
-  get() {
-    return isControlled.value ? !!props.modelValue : internalOpen.value
-  },
-  set(v) {
-    if (isControlled.value) {
-      emit('update:modelValue', v)
-    } else {
-      internalOpen.value = v
-    }
-  },
-})
-
-function close() {
-  open.value = false
-}
 
 async function handleSubmit(e) {
   e.preventDefault();
@@ -97,27 +69,23 @@ async function handleSubmit(e) {
   }
 }
 
-
-const slots = useSlots()
+const props = defineProps(['modelValue'])
+const emit = defineEmits(['update:modelValue'])
+const close = () => emit('update:modelValue', false)
 </script>
 
 <template>
     <div> 
-        <button v-if="!isControlled" type="button"
-            class="px-3 py-2 rounded-md border border-gray-700 text-sm bg-gray-800 text-white hover:bg-gray-700"
-            @click="open = true">
-            Add Item
-        </button>
 
         <teleport to="body">
             <transition name="fade">
-                <div v-if="open" class="fixed inset-0 z-50 flex items-center justify-center p-4" aria-hidden="false">
+                <div v-if="modelValue" class="fixed inset-0 z-50 flex items-center justify-center p-4" aria-hidden="false">
                     <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" @click.self="close"></div>
 
                     <div role="dialog" aria-modal="true"
                         class="relative z-10 w-full max-w-md bg-[#0b0b0d] text-white rounded-lg shadow-lg p-6 border border-gray-800"
                         aria-labelledby="dialog-title">
-                        <h2 id="dialog-title" class="text-lg font-semibold text-white">Add Item</h2>
+                        <h2 id="dialog-title" class="text-lg font-semibold text-white">Add Itema</h2>
                         <p class="text-sm text-gray-400 mb-4">Fill in the item details.</p>
 
                         <form @submit="handleSubmit" class="space-y-4">
