@@ -85,7 +85,7 @@ const close = () => emit('update:modelValue', false)
                     <div role="dialog" aria-modal="true"
                         class="relative z-10 w-full max-w-md bg-[#0b0b0d] text-white rounded-lg shadow-lg p-6 border border-gray-800"
                         aria-labelledby="dialog-title">
-                        <h2 id="dialog-title" class="text-lg font-semibold text-white">Add Itema</h2>
+                        <h2 id="dialog-title" class="text-lg font-semibold text-white">Add Item</h2>
                         <p class="text-sm text-gray-400 mb-4">Fill in the item details.</p>
 
                         <form @submit="handleSubmit" class="space-y-4">

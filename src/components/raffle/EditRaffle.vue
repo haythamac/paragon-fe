@@ -4,34 +4,13 @@ import FieldInput from '../common/FieldInput.vue'
 import { toast } from 'vue-sonner'
 
 const loading = ref(false)
-const allMembers = ref([])
-const selectedMembers = ref([])
-const memberSearch = ref('')
 
-onMounted(async () => {
-  // fetch members from your members API
-})
-
-const filteredMembers = computed(() => {
-  if (!memberSearch.value) return allMembers.value
-  
-  return allMembers.value.filter(member => {
-    // How would you check if member.name includes the search?
-    // Remember: case insensitive!
-  })
-})
-
-const selectAll = () => {
-  selectedMembers.value = ''// what goes here?
-}
-
-const clearAll = () => {
-  selectedMembers.value = ''// what goes here?
-}
 
 const props = defineProps(['modelValue'])
 const emit = defineEmits(['update:modelValue'])
 const close = () => emit('update:modelValue', false)
+
+
 </script>
 
 <template>
@@ -45,7 +24,7 @@ const close = () => emit('update:modelValue', false)
                     <div role="dialog" aria-modal="true"
                         class="relative z-10 w-full max-w-md bg-[#0b0b0d] text-white rounded-lg shadow-lg p-6 border border-gray-800"
                         aria-labelledby="dialog-title">
-                        <h2 id="dialog-title" class="text-lg font-semibold text-white">Create Raffle</h2>
+                        <h2 id="dialog-title" class="text-lg font-semibold text-white">Edit Raffle</h2>
                         <p class="text-sm text-gray-400 mb-4">Fill in the item details.</p>
 
                         <form @submit="handleSubmit" class="space-y-4">
