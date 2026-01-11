@@ -4,8 +4,10 @@ import { ref, computed, onMounted, useSlots } from 'vue'
 import { categoryAPI } from '@/services/categoryAPI'
 import { itemAPI } from '@/services/itemAPI'
 import InventoryItem from './InventoryItem.vue'
+import { Input } from '@/components/ui/input'
 
 const categories = ref([])
+const searchQuery = ref('')
 const items = ref([])
 const loading = ref(false)
 const error = ref(null)
@@ -62,6 +64,18 @@ const open = computed({
   },
 })
 
+const filteredItems = computed(() => {
+  console.log('Filtering items with query:', searchQuery.value)
+
+  if (!searchQuery.value) {
+    return items.value
+  }
+
+  return items.value.filter(item =>
+    item.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+  )
+})
+
 function close() {
   open.value = false
 }
@@ -89,11 +103,17 @@ const slots = useSlots()
                         aria-labelledby="dialog-title">
                         <h2 id="dialog-title" class="text-lg font-semibold text-white">Inventory</h2>
                         <p class="text-sm text-gray-400 mb-4">All items are listed here.</p>
+                        <div class="flex justify-between items-center mb-4">
+                          <Input class="w-48" v-model="searchQuery"/>
+                          <div>
+                            Filter
+                          </div>
+                        </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[60vh] overflow-y-auto">
                           
                           <InventoryItem
-                          v-for="item in items"
+                          v-for="item in filteredItems"
                           :key="item.id"
                           :itemName="item.name"
                           :rarity="item.rarity"
