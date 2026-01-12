@@ -30,7 +30,7 @@ const props = defineProps({
         <!-- Main content - flex layout -->
         <div class="flex items-center gap-2 p-1">
             <!-- Left side: Class icon/badge -->
-            <div class="border border-gray-600 rounded-full p-4 flex items-center justify-center text-gray-400">
+            <div class="border border-gray-600 rounded-lg p-4 flex items-center justify-center text-gray-400">
                 <!-- How do you display the class? 
                      For now, maybe just show the class name or first letter? -->
                 {{class}}

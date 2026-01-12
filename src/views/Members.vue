@@ -2,8 +2,9 @@
 import { ref } from 'vue'
 import NavBar from '@/components/layout/NavBar.vue'
 import MemberGroup from '@/components/members/MemberGroup.vue';
-import CTAButton from '@/components/common/CTAButton.vue';
+import AddMember from '@/components/members/AddMember.vue';
 
+const addMemberOpen  = ref(false)
 </script>
 
 <template>
@@ -17,6 +18,7 @@ import CTAButton from '@/components/common/CTAButton.vue';
 			<div class="">
 				<button @click="addMemberOpen = true" class="flex-1 bg-indigo-600 text-white px-3 py-2 rounded-md text-sm">Add Member</button>
 			</div>
+			<AddMember v-model="addMemberOpen" />
 			<MemberGroup
 				groupName="Leader"
 			 :members="[
