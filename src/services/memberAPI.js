@@ -1,6 +1,6 @@
 import api from './api'
 
-export const itemAPI = {
+export const memberAPI = {
   getAll: () => api.get('/members'),
   store: (data) => api.post('/members', data),
   update: (id, data) => api.put('/members/${id}', data),

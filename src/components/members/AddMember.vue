@@ -4,6 +4,25 @@ import FieldInput from '../common/FieldInput.vue'
 import Dropdown from '../common/Dropdown.vue'
 import { toast } from 'vue-sonner'
 
+import { useFormSubmit } from '@/composables/useFormSubmit';
+
+import { memberAPI } from '@/services/memberAPI.js';
+
+const {submit, isLoading, errors} = useFormSubmit(memberAPI.store);
+
+async function handleSubmit(e) {
+  e.preventDefault();
+  const form = e.target;
+  const formData = new FormData(form);
+  
+  try{
+	await submit(formData);
+	form.reset();
+  } catch(err){
+	console.error("Failed to add member:", err);
+  }
+}
+
 const loading = ref(false)
 
 onMounted(async () => {
@@ -35,6 +54,9 @@ const close = () => emit('update:modelValue', false)
                             <field-input label="Player name" name="playerName" type="text" placeholder="Exact in-game name"
                                 required>
                             </field-input>
+                            <span v-if="errors.name" class="text-red-500 text-sm">
+                                {{ errors.name[0] }}
+                            </span>
 
                             <field-input label="Level" name="level" type="number" placeholder="Current level"
                                 required>
@@ -48,7 +70,7 @@ const close = () => emit('update:modelValue', false)
                                 required>
                             </field-input>
 
-                            <Dropdown label="Role" name="role" v-model="selectedRarity" :options="[
+                            <Dropdown label="Role" name="role" :options="[
                                 { label: 'Leader', value: 'leader', color: 'rarity-legendary' },
                                 { label: 'Elder', value: 'elder', color: 'rarity-epic' },
                                 { label: 'Agent', value: 'agent', color: 'rarity-rare' },
@@ -59,6 +81,7 @@ const close = () => emit('update:modelValue', false)
 
                             <div class="flex justify-end gap-2 pt-2">
                                 <button type="button"
+                                    :disabled="isLoading"
                                     class="px-3 py-2 rounded-md border border-gray-700 text-gray-200 bg-transparent"
                                     @click="close">Cancel</button>
                                 <button type="submit"
