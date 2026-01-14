@@ -10,6 +10,8 @@ const props = defineProps({
   required: { type: Boolean, default: false },
   min: { type: [Number, String], default: undefined },
   max: { type: [Number, String], default: undefined },
+  hideSpinner: { type: Boolean, default: false },
+
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -37,11 +39,23 @@ function onInput(e: Event) {
       :max="max"
       :value="modelValue"
       @input="onInput"
-      class="block w-full rounded-md bg-gray-900 text-white border border-gray-700 placeholder-gray-500 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-    />
+      :class="[
+        'block w-full rounded-md bg-gray-900 text-white border border-gray-700 placeholder-gray-500 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500',
+        hideSpinner && type === 'number' ? 'no-spinner' : ''
+      ]"
+      />
   </div>
 </template>
 
 <style scoped>
-/* keep small and reusable; rely on Tailwind for theming */
+/* Utility class to hide number input spinners */
+.no-spinner::-webkit-inner-spin-button,
+.no-spinner::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.no-spinner {
+  -moz-appearance: textfield;
+}
+
 </style>

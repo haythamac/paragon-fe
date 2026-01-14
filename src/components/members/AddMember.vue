@@ -65,17 +65,22 @@ const close = () => emit('update:modelValue', false)
                                 {{ errors.name[0] }}
                             </span>
 
-                            <field-input label="Level" name="level" type="number" placeholder="Current level"
+                            <field-input label="Level" name="level" type="number" placeholder="Current level" min="1" hideSpinner
                                 required>
                             </field-input>
 
-                            <field-input label="Power" name="power" type="number" placeholder="Growth Power"
+                            <field-input label="Power" name="power" type="number" placeholder="Growth Power" min="1" hideSpinner
                                 required>
                             </field-input>
 
-                            <field-input label="Class" name="class" type="text" placeholder="Character class"
-                                required>
-                            </field-input>
+
+                            <Dropdown label="Class" name="class" :options="[
+                                { label: 'Berserker', value: 'leader', color: 'rarity-legendary' },
+                                { label: 'Warlord', value: 'elder', color: 'rarity-epic' },
+                                { label: 'Skald', value: 'agent', color: 'rarity-rare' },
+                                { label: 'Volva', value: 'member', color: 'rarity-uncommon' },
+                                { label: 'Archer', value: 'new-member', color: 'rarity-common' },
+                            ]" placeholder="Select player class" required />
 
                             <Dropdown label="Role" name="role" :options="[
                                 { label: 'Leader', value: 'leader', color: 'rarity-legendary' },
