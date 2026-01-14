@@ -75,11 +75,11 @@ const close = () => emit('update:modelValue', false)
 
 
                             <Dropdown label="Class" name="class" :options="[
-                                { label: 'Berserker', value: 'leader', color: 'rarity-legendary' },
-                                { label: 'Warlord', value: 'elder', color: 'rarity-epic' },
-                                { label: 'Skald', value: 'agent', color: 'rarity-rare' },
-                                { label: 'Volva', value: 'member', color: 'rarity-uncommon' },
-                                { label: 'Archer', value: 'new-member', color: 'rarity-common' },
+                                { label: 'Berserker', value: 'berserker', color: 'rarity-legendary' },
+                                { label: 'Warlord', value: 'warlord', color: 'rarity-epic' },
+                                { label: 'Skald', value: 'skald', color: 'rarity-rare' },
+                                { label: 'Volva', value: 'volva', color: 'rarity-uncommon' },
+                                { label: 'Archer', value: 'archer', color: 'rarity-common' },
                             ]" placeholder="Select player class" required />
 
                             <Dropdown label="Role" name="role" :options="[

@@ -1,5 +1,5 @@
 <script setup>
-
+import { computed } from 'vue'
 const props = defineProps({
     name: {
         type: String,
@@ -18,6 +18,18 @@ const props = defineProps({
         required: true
     }
 })
+
+
+// Capitalize first letter of class
+const formattedClass = computed(() => {
+    return props.class.charAt(0).toUpperCase() + props.class.slice(1)
+})
+
+// Format power with commas
+const formattedPower = computed(() => {
+    return props.power.toLocaleString()
+})
+
 </script>
 
 <template>
@@ -33,7 +45,7 @@ const props = defineProps({
             <div class="border border-gray-600 rounded-lg p-4 flex items-center justify-center text-gray-400">
                 <!-- How do you display the class? 
                      For now, maybe just show the class name or first letter? -->
-                {{class}}
+                {{formattedClass }}
             </div>
             
             <!-- Right side: Member info -->
@@ -47,7 +59,7 @@ const props = defineProps({
                     <span>Lv. {{ level }}</span>
                     
                     <!-- Power -->
-                    <span class="text-yellow-500">⚔️ {{ power }}</span>
+                    <span class="text-yellow-500">⚔️ {{ formattedPower  }}</span>
                 </div>
             </div>
         </div>
