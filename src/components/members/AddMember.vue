@@ -14,9 +14,16 @@ async function handleSubmit(e) {
   e.preventDefault();
   const form = e.target;
   const formData = new FormData(form);
+
+  // Convert FormData to plain object
+  const payload = Object.fromEntries(formData);
   
+  // Map playerName → name
+  payload.name = payload.playerName;
+  delete payload.playerName;
+
   try{
-	await submit(formData);
+	await submit(payload);
 	form.reset();
   } catch(err){
 	console.error("Failed to add member:", err);
