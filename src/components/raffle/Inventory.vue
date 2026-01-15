@@ -82,7 +82,7 @@ const close = () => emit('update:modelValue', false)
                           :itemName="item.name"
                           :rarity="item.rarity"
                           :category="categoryMap[item.item_category_id]"
-                          :image="item.image || 'https://placehold.co/150?text=Weapon'" />
+                          :image="item.image || 'https://placehold.co/150/black/white?text=Weapon'" />
                           
                         </div>
 
