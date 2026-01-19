@@ -1,7 +1,11 @@
 <script setup>
 import { ref, computed, onMounted, useSlots } from 'vue'
+
 import FieldInput from '../common/FieldInput.vue'
 import ComboBoxInput from '../common/ComboBoxInput.vue'
+import StepIndicator from './StepIndicator.vue'
+import ItemSelector from './ItemSelector.vue'
+
 import { toast } from 'vue-sonner'
 import { memberAPI } from '@/services/memberAPI'
 
