@@ -9,6 +9,7 @@ import ItemSelector from './ItemSelector.vue'
 import { toast } from 'vue-sonner'
 import { memberAPI } from '@/services/memberAPI'
 import { itemAPI } from '@/services/itemAPI'
+import { raffleAPI } from '@/services/raffleAPI'
 
 const loading = ref(false)
 const currentStep = ref(0)
@@ -117,9 +118,10 @@ const handleSubmit = async () => {
                 quantity: item.quantity
             })),
         }
-
+        
+        console.log(raffleData);
         // Replace with your actual API call
-        // const response = await raffleAPI.create(raffleData)
+        const response = await raffleAPI.create(raffleData)
 
         console.log('Raffle Data:', raffleData)
         toast.success('Raffle created successfully!')
