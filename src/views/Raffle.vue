@@ -1,19 +1,28 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import NavBar from '@/components/layout/NavBar.vue'
 import FilterSidebar from '@/components/raffle/FilterSidebar.vue'
 import RaffleCard from '@/components/raffle/RaffleCard.vue'
 import AdminPanel from '@/components/raffle/AdminPanel.vue'
 import InventoryItem from '@/components/raffle/InventoryItem.vue'
+import { raffleAPI } from '@/services/raffleAPI'
 
 const showFilters = ref(false)
 
-// example mock data
-const raffles = ref([
-  { id: 1, title: 'Christmas raffle (by Black)', date: '2025-12-08', joined: 'Members: 35 joined', status: 'in-progress' },
-  { id: 2, title: 'Guild Raffle #002', date: '2025-12-05', joined: 'Members: 28 joined', status: 'pending' },
-  { id: 3, title: 'Guild Raffle #001', date: '2025-12-01', joined: 'Members: 21 joined', status: 'completed' },
-])
+const allRaffles = ref([])
+
+onMounted(async () => {
+  document.title = 'Raffles'
+
+  try {
+    const raffleResponse = await raffleAPI.getAll();
+    allRaffles.value = raffleResponse.data.data;
+
+  } catch (error) {
+    console.error('Error fetching raffles:', error)
+  }
+})
+
 </script>
 
 <template>
@@ -30,7 +39,8 @@ const raffles = ref([
       <!-- Mobile filter button -->
       <div class="lg:hidden mb-4 flex items-center justify-between gap-3">
         <div class="text-sm text-gray-300">Raffles</div>
-        <button @click="showFilters = !showFilters" class="bg-transparent border border-gray-700 text-gray-200 px-3 py-1 rounded-md">
+        <button @click="showFilters = !showFilters"
+          class="bg-transparent border border-gray-700 text-gray-200 px-3 py-1 rounded-md">
           Filters
         </button>
       </div>
@@ -47,26 +57,16 @@ const raffles = ref([
       <main class="relative">
         <!-- Raffle list -->
         <div class="space-y-6">
-          <div class="text-sm text-gray-400">Showing {{ raffles.length }} raffles • sorted newest → oldest</div>
+          <div class="text-sm text-gray-400">Showing raffles • sorted newest → oldest</div>
 
           <div class="space-y-4">
-            <RaffleCard
-              v-for="r in raffles"
-              :key="r.id"
-              :title="r.title"
-              :date="r.date"
-              :joined="r.joined"
-              :status="r.status"
-            />
+            <RaffleCard v-for="r in allRaffles" :key="r.id" :title="r.name" :date="r.date" :joined="r.members_count" :items="r.items_count"
+              :status="r.status" />
           </div>
 
           <div class="space-y-4">
-            <InventoryItem
-              itemName="Epic Sword of Testing"
-              description="A powerful sword used for testing purposes."
-              rarity="epic"
-              :quantity="3"
-              image="https://via.placeholder.com/150"/>
+            <InventoryItem itemName="Epic Sword of Testing" description="A powerful sword used for testing purposes."
+              rarity="epic" :quantity="3" image="https://via.placeholder.com/150" />
           </div>
         </div>
       </main>

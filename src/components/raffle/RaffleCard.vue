@@ -1,19 +1,30 @@
 <script setup>
+import { computed } from 'vue'
 const props = defineProps({
   title: String,
   date: String,
   joined: String,
+  items: String,
   status: String, // pending | in-progress | completed
 })
+const formattedDate = computed(() => {
+  return new Date(props.date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+});
+
 </script>
 
 <template>
   <article class="bg-[#0b0b0d] border border-gray-800 rounded-lg p-5 flex items-center justify-between gap-4 shadow-sm">
     <div class="flex gap-4 items-start">
       <div class="flex flex-col">
-        <div class="text-xs text-gray-400">{{ date }}</div>
+        <div class="text-xs text-gray-400">{{ formattedDate }}</div>
         <div class="text-lg font-semibold text-white">{{ title }}</div>
-        <div class="text-sm text-gray-300 mt-2">{{ joined }}</div>
+        <div class="text-sm text-gray-300 mt-2">Joined: {{ joined }}</div>
+        <div class="text-sm text-gray-300 mt-2">Total Items: {{ items }}</div>
       </div>
     </div>
 
