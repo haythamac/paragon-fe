@@ -16,8 +16,17 @@ const routes = [
   {
     path: '/events/raffle',
     name: 'raffle',
-    // Lazy loading for better performance
     component: () => import('@/views/Raffle.vue')
+  },
+  {
+    path: '/raffles/:id',
+    name: 'raffle-detail',
+    component: () => import('@/components/raffle/RaffleDetail.vue')
+  },
+  {
+    path: '/raffles/:id/result',
+    name: 'raffle-result',
+    component: () => import('@/components/raffle/RaffleResult.vue')
   },
   {
     path: '/test-categories',

@@ -60,8 +60,14 @@ onMounted(async () => {
           <div class="text-sm text-gray-400">Showing raffles • sorted newest → oldest</div>
 
           <div class="space-y-4">
-            <RaffleCard v-for="r in allRaffles" :key="r.id" :title="r.name" :date="r.date" :joined="r.members_count" :items="r.items_count"
-              :status="r.status" />
+            <RaffleCard v-for="r in allRaffles" 
+                :key="r.id" 
+                :id="r.id"
+                :title="r.name" 
+                :date="r.date" 
+                :joined="r.members_count"
+                :items="r.items_count" 
+                :status="r.status" />
           </div>
 
           <div class="space-y-4">
