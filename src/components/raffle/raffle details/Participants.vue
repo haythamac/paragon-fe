@@ -23,13 +23,23 @@ const placeholderParticipants = [
     { id: 4, name: 'Yuki Tanaka', class: 'Healer', level: 35, growthPower: 7979 },
     { id: 5, name: 'Carlos Rivera', class: 'Rogue', level: 67, growthPower: 6216 },
     { id: 6, name: 'Emma Wilson', class: 'Paladin', level: 59, growthPower: 5939 },
+    { id: 7, name: 'Liam Johnson', class: 'Berserker', level: 70, growthPower: 15000 },
+    { id: 8, name: 'Sophia Lee', class: 'Druid', level: 48, growthPower: 8420 },
+    { id: 9, name: 'Noah Brown', class: 'Necromancer', level: 53, growthPower: 9100 },
+    { id: 10, name: 'Olivia Davis', class: 'Monk', level: 60, growthPower: 7800 },
+    { id: 11, name: 'Ethan Martinez', class: 'Sorcerer', level: 65, growthPower: 10234 },
+    { id: 12, name: 'Ava Garcia', class: 'Ranger', level: 58, growthPower: 6745 },
+    { id: 13, name: 'Mason Rodriguez', class: 'Knight', level: 61, growthPower: 8901 },
+    { id: 14, name: 'Isabella Hernandez', class: 'Assassin', level: 66, growthPower: 7200 },
+    { id: 15, name: 'Logan Lopez', class: 'Bard', level: 54, growthPower: 5600 },
+    { id: 16, name: 'Mia Gonzalez', class: 'Alchemist', level: 57, growthPower: 6345 },
 ]
 
 const displayParticipants = computed(() => {
     return props.participants.length ? props.participants : placeholderParticipants
 })
 
-const filteredParticipants = computed(() => {
+const filteredParticipantsAll = computed(() => {
     let filtered = displayParticipants.value
 
     if (searchQuery.value) {
@@ -39,7 +49,11 @@ const filteredParticipants = computed(() => {
         )
     }
 
-    return showAll.value ? filtered : filtered.slice(0, 6)
+    return filtered
+})
+
+const filteredParticipants = computed(() => {
+    return showAll.value ? filteredParticipantsAll.value : filteredParticipantsAll.value.slice(0, 6)
 })
 
 const toggleShowAll = () => {
@@ -95,10 +109,10 @@ const toggleShowAll = () => {
         </div>
 
         <!-- Show All/Less Button -->
-        <div class="flex justify-center mb-6" v-if="displayParticipants.length > 6 && filteredParticipants.length > 6">
+        <div class="flex justify-center mb-6" v-if="filteredParticipantsAll.length > 6">
             <button @click="toggleShowAll"
                 class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg text-sm font-medium transition-colors">
-                {{ showAll ? 'Show Less' : `Show All ${displayParticipants.length} Participants` }}
+                {{ showAll ? 'Show Less' : `Show All ${filteredParticipantsAll.length} Participants` }}
             </button>
         </div>
 

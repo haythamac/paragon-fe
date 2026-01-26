@@ -32,6 +32,10 @@ const placeholderItems = [
     { id: 4, name: 'Mystic Shield', rarity: 'rare', category: 'Material', quantity: 4 },
     { id: 5, name: 'Ancient Tome', rarity: 'common', category: 'Material', quantity: 4 },
     { id: 6, name: 'Crystal Amulet', rarity: 'common', category: 'Armor', quantity: 3 },
+    { id: 7, name: 'Elixir of Speed', rarity: 'epic', category: 'Consumable', quantity: 2 },
+    { id: 8, name: 'Shadow Cloak', rarity: 'rare', category: 'Armor', quantity: 1 },
+    { id: 9, name: 'Silver Ring', rarity: 'common', category: 'Accessory', quantity: 5 },
+    { id: 10, name: 'Golden Crown', rarity: 'legendary', category: 'Accessory', quantity: 1 },
 ]
 
 const rarities = [
@@ -46,7 +50,7 @@ const displayItems = computed(() => {
     return props.items.length ? props.items : placeholderItems
 })
 
-const filteredItems = computed(() => {
+const filteredItemsAll = computed(() => {
     let filtered = displayItems.value
 
     if (searchQuery.value) {
@@ -60,7 +64,11 @@ const filteredItems = computed(() => {
         filtered = filtered.filter(item => item.rarity === selectedRarity.value)
     }
 
-    return showAll.value ? filtered : filtered.slice(0, 6)
+    return filtered
+})
+
+const filteredItems = computed(() => {
+    return showAll.value ? filteredItemsAll.value : filteredItemsAll.value.slice(0, 6)
 })
 
 const toggleShowAll = () => {
@@ -143,10 +151,10 @@ const toggleShowAll = () => {
         </div>
 
         <!-- Show All/Less Button -->
-        <div class="flex justify-center mb-6" v-if="displayItems.length > 6 && filteredItems.length > 6">
+        <div class="flex justify-center mb-6" v-if="filteredItemsAll.length > 6">
             <button @click="toggleShowAll"
                 class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg text-sm font-medium transition-colors">
-                {{ showAll ? 'Show Less' : `Show All ${displayItems.length} Items` }}
+                {{ showAll ? 'Show Less' : `Show All ${filteredItemsAll.length} Items` }}
             </button>
         </div>
 
