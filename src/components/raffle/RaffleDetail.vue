@@ -9,6 +9,7 @@ import PrizeItems from './raffle details/PrizeItems.vue';
 import { raffleAPI } from '@/services/raffleAPI';
 
 const currentRaffle = ref([]);
+console.log("testing raffle detail");
 
 onMounted(async () => {
     const route = useRoute();
