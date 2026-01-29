@@ -1,8 +1,29 @@
 <script setup>
+import { onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
+
 import NavBar from '../layout/NavBar.vue';
 import GeneralInformation from './raffle details/GeneralInformation.vue';
 import Participants from './raffle details/Participants.vue';
 import PrizeItems from './raffle details/PrizeItems.vue';
+import { raffleAPI } from '@/services/raffleAPI';
+
+const currentRaffle = ref([]);
+
+onMounted(async () => {
+    const route = useRoute();
+    const raffleId = route.params.id;
+
+    try {
+        const raffleResponse = await raffleAPI.getById(raffleId);
+
+        currentRaffle.value = raffleResponse.data.data;
+    } catch (error) {
+        console.error('Error fetching raffle details:', error);
+    }
+    
+    document.title = 'Raffle Details - Paragon';
+});
 
 
 </script>

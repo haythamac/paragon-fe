@@ -70,10 +70,6 @@ onMounted(async () => {
                 :status="r.status" />
           </div>
 
-          <div class="space-y-4">
-            <InventoryItem itemName="Epic Sword of Testing" description="A powerful sword used for testing purposes."
-              rarity="epic" :quantity="3" image="https://via.placeholder.com/150" />
-          </div>
         </div>
       </main>
     </div>
