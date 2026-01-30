@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import ItemDistributionModal from './ItemDistributionModal.vue'
 
 const props = defineProps({
@@ -12,6 +12,15 @@ const props = defineProps({
         default: 0
     }
 })
+// Watch for changes
+watch(
+    () => props.participants,
+    (newVal) => {
+        console.log('Participants updated:', newVal)
+    },
+    { immediate: true }
+)
+
 
 const searchQuery = ref('')
 const showAll = ref(false)
@@ -40,9 +49,8 @@ const availableItems = [
     { id: 8, name: 'Steel Sword', rarity: 'common', category: 'Weapon', stock: 25 },
 ]
 
-const displayParticipants = computed(() => {
-    return props.participants.length ? props.participants : placeholderParticipants
-})
+
+const displayParticipants = computed(() => props.participants)
 
 const filteredParticipantsAll = computed(() => {
     let filtered = displayParticipants.value
@@ -135,7 +143,7 @@ const handleDistribute = (data) => {
                     </div>
                     <div class="text-xs">
                         <span class="text-gray-400">Power:</span>
-                        <span class="text-gray-200 ml-1.5">{{ participant.growthPower.toLocaleString() }}</span>
+                        <span class="text-gray-200 ml-1.5">{{ participant.power.toLocaleString() }}</span>
                     </div>
                 </div>
             </div>
