@@ -1,4 +1,6 @@
 <script setup>
+import { computed } from 'vue'
+
 const props = defineProps({
     title: String,
     date: String,
@@ -6,15 +8,18 @@ const props = defineProps({
     status: String,
     totalParticipants: Number,
     prizeItems: Number,
-    legendaryItems: Number,
+    coreItems: Number,
     totalPrizes: Number,
 })
 
-const formattedDate = new Date(props.date).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+const formattedDate = computed(() => {
+    return new Date(props.date).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    })
 })
+
 </script>
 
 <template>
@@ -62,8 +67,8 @@ const formattedDate = new Date(props.date).toLocaleDateString('en-US', {
 
             <!-- Legendary Items -->
             <div class="bg-yellow-900/30 border border-yellow-800/50 rounded-lg p-3">
-                <div class="text-2xl font-bold text-yellow-400 mb-0.5">{{ legendaryItems }}</div>
-                <div class="text-xs text-yellow-300">Legendary Items</div>
+                <div class="text-2xl font-bold text-yellow-400 mb-0.5">{{ coreItems }}</div>
+                <div class="text-xs text-yellow-300">Core Items</div>
             </div>
 
             <!-- Total Prizes -->

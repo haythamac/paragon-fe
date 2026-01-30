@@ -9,7 +9,8 @@ import PrizeItems from './raffle details/PrizeItems.vue';
 import { raffleAPI } from '@/services/raffleAPI';
 
 const currentRaffle = ref([]);
-console.log("testing raffle detail");
+const raffleMembers = ref([]);
+const raffleItems = ref([]);
 
 onMounted(async () => {
     const route = useRoute();
@@ -19,11 +20,14 @@ onMounted(async () => {
         const raffleResponse = await raffleAPI.getById(raffleId);
 
         currentRaffle.value = raffleResponse.data.data;
+        raffleMembers.value = raffleResponse.data.data.members;
+        raffleItems.value = raffleResponse.data.data.items;
     } catch (error) {
         console.error('Error fetching raffle details:', error);
     }
     
     document.title = 'Raffle Details - Paragon';
+    
 });
 
 
@@ -38,12 +42,12 @@ onMounted(async () => {
         <div class="mx-auto max-w-7xl px-6 py-28 gap-8 flex flex-col">
             <!-- Raffle General Information -->
             <GeneralInformation 
-                title="8th Weekly Raffle Event" 
-                date="2026-01-26"
-                description="Guild Sanctuary Weekly Raffle"
-                status="in-progress" 
-                :totalParticipants="50" 
-                :prizeItems="35" 
+                :title="currentRaffle.name" 
+                :date="currentRaffle.date"
+                :description="currentRaffle.description || 'No description provided.'"
+                :status="currentRaffle.status" 
+                :totalParticipants="raffleMembers.length"
+                :prizeItems="raffleItems.length" 
                 :coreItems="6" 
                 :totalPrizes="89" />
 
