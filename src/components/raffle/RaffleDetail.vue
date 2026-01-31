@@ -55,12 +55,13 @@ onMounted(async () => {
             <Participants 
                 :participants="raffleMembers" 
                 :totalCount="raffleMembers.length"
+                :items="raffleItems"
             />
 
             <!-- Raffle Prize Items List -->
             <PrizeItems 
                 :items="raffleItems" 
-                :totalCount="raffleItems.length"
+                :totalCount="raffleItems.length" 
             />
         </div>
     </section>

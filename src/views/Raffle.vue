@@ -26,7 +26,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section class="min-h-[100vh] bg-[#09040f] text-white pt-20 lg:pt-28">
+  <section class="min-h-screen bg-[#09040f] text-white pt-20 lg:pt-28">
     <NavBar />
 
     <div class="mx-auto max-w-7xl px-6 py-10 grid lg:grid-cols-[280px_1fr] gap-8">

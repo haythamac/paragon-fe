@@ -7,6 +7,10 @@ const props = defineProps({
         type: Array,
         default: () => []
     },
+    items: {
+        type: Array,
+        default: () => []
+    },
     totalCount: {
         type: Number,
         default: 0
@@ -38,16 +42,18 @@ const placeholderParticipants = [
 ]
 
 // Available items for distribution
-const availableItems = [
-    { id: 1, name: 'Dragon Sword', rarity: 'epic', category: 'Weapon', stock: 5 },
-    { id: 2, name: 'Phoenix Feather', rarity: 'common', category: 'Material', stock: 20 },
-    { id: 3, name: 'Health Potion', rarity: 'legendary', category: 'Consumable', stock: 15 },
-    { id: 4, name: 'Mystic Shield', rarity: 'rare', category: 'Armor', stock: 8 },
-    { id: 5, name: 'Ancient Tome', rarity: 'common', category: 'Material', stock: 12 },
-    { id: 6, name: 'Crystal Amulet', rarity: 'common', category: 'Accessory', stock: 10 },
-    { id: 7, name: 'Elixir of Life', rarity: 'legendary', category: 'Consumable', stock: 3 },
-    { id: 8, name: 'Steel Sword', rarity: 'common', category: 'Weapon', stock: 25 },
-]
+// const availableItems = [
+//     { id: 1, name: 'Dragon Sword', rarity: 'epic', category: 'Weapon', stock: 5 },
+//     { id: 2, name: 'Phoenix Feather', rarity: 'common', category: 'Material', stock: 20 },
+//     { id: 3, name: 'Health Potion', rarity: 'legendary', category: 'Consumable', stock: 15 },
+//     { id: 4, name: 'Mystic Shield', rarity: 'rare', category: 'Armor', stock: 8 },
+//     { id: 5, name: 'Ancient Tome', rarity: 'common', category: 'Material', stock: 12 },
+//     { id: 6, name: 'Crystal Amulet', rarity: 'common', category: 'Accessory', stock: 10 },
+//     { id: 7, name: 'Elixir of Life', rarity: 'legendary', category: 'Consumable', stock: 3 },
+//     { id: 8, name: 'Steel Sword', rarity: 'common', category: 'Weapon', stock: 25 },
+// ]
+
+const availableItems = computed(() => props.items)
 
 
 const displayParticipants = computed(() => props.participants)
