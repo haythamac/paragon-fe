@@ -58,7 +58,10 @@ onMounted(async () => {
             />
 
             <!-- Raffle Prize Items List -->
-            <PrizeItems />
+            <PrizeItems 
+                :items="raffleItems" 
+                :totalCount="raffleItems.length"
+            />
         </div>
     </section>
 

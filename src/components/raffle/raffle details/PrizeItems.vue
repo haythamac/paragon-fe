@@ -46,9 +46,7 @@ const rarities = [
     { value: 'common', label: 'Common' }
 ]
 
-const displayItems = computed(() => {
-    return props.items.length ? props.items : placeholderItems
-})
+const displayItems = computed(() => props.items)
 
 const filteredItemsAll = computed(() => {
     let filtered = displayItems.value
@@ -138,7 +136,7 @@ const toggleShowAll = () => {
                         <div class="flex items-center gap-2.5 text-xs">
                             <div>
                                 <span class="text-gray-400">Category:</span>
-                                <span class="text-gray-200 ml-1">{{ item.category }}</span>
+                                <span class="text-gray-200 ml-1">{{ item.item_category_id }}</span>
                             </div>
                             <div>
                                 <span class="text-gray-400">Qty:</span>
