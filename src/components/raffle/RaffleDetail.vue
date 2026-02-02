@@ -11,23 +11,24 @@ import { raffleAPI } from '@/services/raffleAPI';
 const currentRaffle = ref([]);
 const raffleMembers = ref([]);
 const raffleItems = ref([]);
+const raffleId = ref(null);
 
-onMounted(async () => {
-    const route = useRoute();
-    const raffleId = route.params.id;
-
+const fetchRaffleData = async () => {
     try {
-        const raffleResponse = await raffleAPI.getById(raffleId);
-
+        const raffleResponse = await raffleAPI.getById(raffleId.value);
         currentRaffle.value = raffleResponse.data.data;
         raffleMembers.value = raffleResponse.data.data.members;
         raffleItems.value = raffleResponse.data.data.items;
     } catch (error) {
         console.error('Error fetching raffle details:', error);
     }
-    
+}
+
+onMounted(async () => {
+    const route = useRoute();
+    raffleId.value = route.params.id;
+    await fetchRaffleData();
     document.title = 'Raffle Details - Paragon';
-    
 });
 
 
@@ -57,6 +58,7 @@ onMounted(async () => {
                 :totalCount="raffleMembers.length"
                 :items="raffleItems"
                 :raffleId="raffleId"
+                @refresh="fetchRaffleData"
             />
 
             <!-- Raffle Prize Items List -->

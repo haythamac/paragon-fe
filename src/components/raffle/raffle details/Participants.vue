@@ -1,6 +1,7 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import ItemDistributionModal from './ItemDistributionModal.vue'
+const emit = defineEmits(['refresh'])
 
 const props = defineProps({
     participants: {
@@ -103,12 +104,6 @@ const closeDistributeModal = () => {
     selectedParticipant.value = null
 }
 
-const handleDistribute = (data) => {
-    console.log('Distributing to:', data.participant)
-    console.log('Items:', data.items)
-    // Add your distribution logic here
-    closeDistributeModal()
-}
 </script>
 
 <template>
@@ -187,7 +182,12 @@ const handleDistribute = (data) => {
         </div>
 
         <!-- Distribution Modal -->
-        <ItemDistributionModal :is-open="showDistributeModal" :participant="selectedParticipant"
-            :available-items="cleanedItems" @close="closeDistributeModal" @distribute="handleDistribute" />
+        <ItemDistributionModal 
+            :is-open="showDistributeModal" 
+            :participant="selectedParticipant"
+            :available-items="cleanedItems" 
+            :raffleId="props.raffleId"
+            @close="closeDistributeModal"
+            @distributed="emit('refresh')" />
     </div>
 </template>

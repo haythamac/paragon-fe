@@ -1,5 +1,7 @@
 <script setup>
+import { itemDistributionAPI } from '@/services/itemDistributionAPI'
 import { ref, computed } from 'vue'
+import { toast } from 'vue-sonner'
 
 const props = defineProps({
     isOpen: Boolean,
@@ -7,10 +9,14 @@ const props = defineProps({
     availableItems: {
         type: Array,
         default: () => []
+    },
+    raffleId: {
+        type: [String, Number],
+        required: true
     }
 })
 
-const emit = defineEmits(['close', 'distribute'])
+const emit = defineEmits(['close', 'distributed'])
 
 const itemSearchQuery = ref('')
 const selectedRarity = ref('all')
@@ -91,14 +97,33 @@ const handleClose = () => {
     emit('close')
 }
 
-const handleDistribute = () => {
-    emit('distribute', {
-        participant: props.participant,
-        items: selectedItems.value
-    })
-    selectedItems.value = []
-    itemSearchQuery.value = ''
-    selectedRarity.value = 'all'
+const handleDistribute = async () => {
+    // Build the payload
+    const payload = {
+        raffle_id: props.raffleId,
+        member_id: props.participant.id,
+        items: selectedItems.value.map(item => ({
+            item_id:  item.id,
+            quantity: item.quantity,
+        }))
+    }
+
+
+    try {
+        await itemDistributionAPI.manualStore(props.raffleId, payload)
+        toast.success("Item distributed successfully");
+
+        // notify parent to close the modal
+        emit('close')
+
+        // optionally also notify parent about distribution
+        emit('distributed', payload)
+
+    } catch (error) {
+        console.error("Error object:", error)
+        toast.error("Item did not distributeaaaa");
+        // Handle error - show message to user later
+    }
 }
 </script>
 

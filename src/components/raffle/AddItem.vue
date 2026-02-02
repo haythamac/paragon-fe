@@ -45,7 +45,6 @@ async function handleSubmit(e) {
   const formData = new FormData(form);
 
   try {
-    console.log(formData);
     await itemAPI.store(formData);
     toast.success("Item saved successfully");
     form.reset();
