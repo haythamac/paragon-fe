@@ -14,7 +14,11 @@ const props = defineProps({
     totalCount: {
         type: Number,
         default: 0
-    }
+    },
+    raffleId: { 
+        type: [String, Number], 
+        required: true 
+    },
 })
 // Watch for changes
 watch(
@@ -53,7 +57,17 @@ const placeholderParticipants = [
 //     { id: 8, name: 'Steel Sword', rarity: 'common', category: 'Weapon', stock: 25 },
 // ]
 
-const availableItems = computed(() => props.items)
+const cleanedItems = computed(() =>
+    props.items.map(item => ({
+        id: item.id,
+        name: item.name,
+        rarity: item.rarity,
+        description: item.description,
+        stock: item.pivot?.remaining_quantity ?? 0,
+        category: item.category?.name ?? 'Unknown',
+    }))
+)
+
 
 
 const displayParticipants = computed(() => props.participants)
@@ -174,6 +188,6 @@ const handleDistribute = (data) => {
 
         <!-- Distribution Modal -->
         <ItemDistributionModal :is-open="showDistributeModal" :participant="selectedParticipant"
-            :available-items="availableItems" @close="closeDistributeModal" @distribute="handleDistribute" />
+            :available-items="cleanedItems" @close="closeDistributeModal" @distribute="handleDistribute" />
     </div>
 </template>

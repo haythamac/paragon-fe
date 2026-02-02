@@ -56,6 +56,7 @@ onMounted(async () => {
                 :participants="raffleMembers" 
                 :totalCount="raffleMembers.length"
                 :items="raffleItems"
+                :raffleId="raffleId"
             />
 
             <!-- Raffle Prize Items List -->
