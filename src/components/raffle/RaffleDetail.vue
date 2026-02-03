@@ -19,6 +19,8 @@ const fetchRaffleData = async () => {
         currentRaffle.value = raffleResponse.data.data;
         raffleMembers.value = raffleResponse.data.data.members;
         raffleItems.value = raffleResponse.data.data.items;
+
+        console.log(raffleItems.value)
     } catch (error) {
         console.error('Error fetching raffle details:', error);
     }
@@ -64,7 +66,6 @@ onMounted(async () => {
             <!-- Raffle Prize Items List -->
             <PrizeItems 
                 :items="raffleItems" 
-                :totalCount="raffleItems.length" 
             />
         </div>
     </section>

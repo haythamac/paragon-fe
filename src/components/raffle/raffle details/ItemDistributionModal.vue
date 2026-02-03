@@ -112,16 +112,12 @@ const handleDistribute = async () => {
     try {
         await itemDistributionAPI.manualStore(props.raffleId, payload)
         toast.success("Item distributed successfully");
-
-        // notify parent to close the modal
-        emit('close')
-
-        // optionally also notify parent about distribution
         emit('distributed', payload)
-
+        emit('close')
+ 
     } catch (error) {
         console.error("Error object:", error)
-        toast.error("Item did not distributeaaaa");
+        toast.error("Item did not distribute");
         // Handle error - show message to user later
     }
 }

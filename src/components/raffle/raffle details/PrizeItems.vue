@@ -5,10 +5,6 @@ const props = defineProps({
     items: {
         type: Array,
         default: () => []
-    },
-    totalCount: {
-        type: Number,
-        default: 0
     }
 })
 
@@ -136,11 +132,15 @@ const toggleShowAll = () => {
                         <div class="flex items-center gap-2.5 text-xs">
                             <div>
                                 <span class="text-gray-400">Category:</span>
-                                <span class="text-gray-200 ml-1">{{ item.item_category_id }}</span>
+                                <span class="text-gray-200 ml-1">{{ item.category.name }}</span>
                             </div>
                             <div>
-                                <span class="text-gray-400">Qty:</span>
-                                <span class="text-indigo-400 ml-1 font-medium">{{ item.quantity }}</span>
+                                <span class="text-gray-400">Initial quantity:</span>
+                                <span class="text-indigo-400 ml-1 font-medium">{{ item.pivot.initial_quantity }}</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400">Remaining quantity:</span>
+                                <span class="text-indigo-400 ml-1 font-medium">{{ item.pivot.remaining_quantity }}</span>
                             </div>
                         </div>
                     </div>
