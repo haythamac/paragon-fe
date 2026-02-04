@@ -1,16 +1,30 @@
 <script setup>
 import { ref, computed } from 'vue'
+import { itemDistributionAPI } from '@/services/itemDistributionAPI'
 
 const props = defineProps({
     items: {
         type: Array,
         default: () => []
-    }
+    },
+    raffleStatus: {
+        type: String,
+        default: 'pending', // 'pending', 'ongoing', 'completed'
+        validator: (value) => ['pending', 'ongoing', 'completed'].includes(value)
+    },
+    raffleId: {
+        type: [String, Number],
+        required: true
+    },
 })
 
 const searchQuery = ref('')
 const selectedRarity = ref('all')
 const showAll = ref(false)
+
+const expandedItems = ref(new Set()) // Track expanded items
+const itemWinners = ref({}) // Cache winners: { itemId: [...winners] }
+const loadingWinners = ref(new Set()) // Track loading state
 
 // Rarity color mapping
 const rarityColors = {
@@ -20,19 +34,30 @@ const rarityColors = {
     common: 'bg-gray-500/20 text-gray-300 border-gray-500/50'
 }
 
-// Placeholder data
-const placeholderItems = [
-    { id: 1, name: 'Dragon Sword', rarity: 'epic', category: 'Consumable', quantity: 1 },
-    { id: 2, name: 'Phoenix Feather', rarity: 'common', category: 'Accessory', quantity: 1 },
-    { id: 3, name: 'Health Potion', rarity: 'legendary', category: 'Consumable', quantity: 1 },
-    { id: 4, name: 'Mystic Shield', rarity: 'rare', category: 'Material', quantity: 4 },
-    { id: 5, name: 'Ancient Tome', rarity: 'common', category: 'Material', quantity: 4 },
-    { id: 6, name: 'Crystal Amulet', rarity: 'common', category: 'Armor', quantity: 3 },
-    { id: 7, name: 'Silver Bow', rarity: 'epic', category: 'Weapon', quantity: 2 },
-    { id: 8, name: 'Golden Helmet', rarity: 'legendary', category: 'Armor', quantity: 1 },
-    { id: 9, name: 'Enchanted Ring', rarity: 'rare', category: 'Accessory', quantity: 5 },
-    { id: 10, name: 'Magic Staff', rarity: 'epic', category: 'Weapon', quantity: 1 },
-]
+// Status badge configuration
+const statusConfig = {
+    pending: {
+        show: false,
+        label: '',
+        class: ''
+    },
+    ongoing: {
+        show: true,
+        label: 'Drawing...',
+        class: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/50',
+        icon: `<svg class="w-3.5 h-3.5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>`
+    },
+    completed: {
+        show: true,
+        label: 'Complete',
+        class: 'bg-green-500/20 text-green-300 border-green-500/50',
+        icon: `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>`
+    }
+}
 
 const rarities = [
     { value: 'all', label: 'All Rarities' },
@@ -67,6 +92,60 @@ const filteredItems = computed(() => {
 
 const toggleShowAll = () => {
     showAll.value = !showAll.value
+}
+
+// Get current status configuration
+const currentStatus = computed(() => statusConfig[props.raffleStatus])
+
+// Check if item is complete (has 0 remaining quantity)
+const isItemComplete = (item) => {
+    return item.pivot.remaining_quantity === 0
+}
+
+// Get item status - for pending state, check if item has stock
+const getItemStatus = (item) => {
+    if (props.raffleStatus === 'ongoing' && isItemComplete(item)) {
+        return statusConfig.completed
+    }
+    return currentStatus.value
+}
+
+
+// Toggle expand/collapse
+const toggleWinners = async (item) => {
+    const itemId = item.id
+
+    if (expandedItems.value.has(itemId)) {
+        // Collapse
+        expandedItems.value.delete(itemId)
+    } else {
+        // Expand - fetch winners if not cached
+        if (!itemWinners.value[itemId]) {
+            await fetchWinners(itemId)
+        }
+        expandedItems.value.add(itemId)
+    }
+}
+
+// Fetch winners from API
+const fetchWinners = async (itemId) => {
+    loadingWinners.value.add(itemId)
+    try {
+        const response = await itemDistributionAPI.showItemWinners(props.raffleId, itemId)
+
+        itemWinners.value[itemId] = response.data.winners || []
+    } catch (error) {
+        console.error('Error fetching winners:', error)
+        itemWinners.value[itemId] = []
+    } finally {
+        loadingWinners.value.delete(itemId)
+    }
+}
+
+// Check if item has winners to show
+const shouldShowWinnersButton = (item) => {
+    // Show if: ongoing/completed OR has distributed items (remaining < initial)
+    return props.raffleStatus !== 'pending' || item.pivot.remaining_quantity < item.pivot.initial_quantity
 }
 </script>
 
@@ -120,28 +199,94 @@ const toggleShowAll = () => {
         <div v-if="filteredItems.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-2.5 mb-3">
             <div v-for="item in filteredItems" :key="item.id"
                 class="bg-[#13131a] border border-gray-700 rounded-lg p-2.5 hover:border-gray-600 transition-colors">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
-                        <div class="flex items-center gap-2 mb-1">
-                            <h3 class="text-sm font-semibold text-white">{{ item.name }}</h3>
-                            <span :class="rarityColors[item.rarity]"
-                                class="px-1.5 py-0.5 rounded text-xs font-medium border capitalize">
-                                {{ item.rarity }}
-                            </span>
+                <div class="flex flex-col gap-2">
+                    <!-- Item Header -->
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <h3 class="text-sm font-semibold text-white">{{ item.name }}</h3>
+                                <span :class="rarityColors[item.rarity]"
+                                    class="px-1.5 py-0.5 rounded text-xs font-medium border capitalize">
+                                    {{ item.rarity }}
+                                </span>
+                                <!-- Status Badge -->
+                                <span v-if="getItemStatus(item).show" :class="getItemStatus(item).class"
+                                    class="px-1.5 py-0.5 rounded text-xs font-medium border flex items-center gap-1">
+                                    <span v-html="getItemStatus(item).icon"></span>
+                                    {{ getItemStatus(item).label }}
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-2.5 text-xs">
+                                <div>
+                                    <span class="text-gray-400">Category:</span>
+                                    <span class="text-gray-200 ml-1">{{ item.category.name }}</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-400">Initial Quantity:</span>
+                                    <span class="text-indigo-400 ml-1 font-medium">{{ item.pivot.initial_quantity
+                                        }}</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-400">Remaining Quantity:</span>
+                                    <span class="text-indigo-400 ml-1 font-medium">{{ item.pivot.remaining_quantity
+                                        }}</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="flex items-center gap-2.5 text-xs">
-                            <div>
-                                <span class="text-gray-400">Category:</span>
-                                <span class="text-gray-200 ml-1">{{ item.category.name }}</span>
+                    </div>
+
+                    <!-- Status Message (only for pending and item still has stock) -->
+                    <div v-if="raffleStatus === 'pending' && !isItemComplete(item)"
+                        class="bg-blue-500/10 border border-blue-500/30 rounded px-2.5 py-1.5 text-center">
+                        <p class="text-xs text-blue-300">Winners will be announced when the raffle draw begins</p>
+                    </div>
+
+                    <!-- Winners Toggle Button -->
+                    <button v-if="shouldShowWinnersButton(item)" @click="toggleWinners(item)"
+                        class="flex items-center justify-between w-full bg-[#1a1a1f] hover:bg-[#20202a] border border-gray-700 rounded px-2.5 py-1.5 text-xs transition-colors">
+                        <span class="text-gray-300 font-medium">
+                            {{ expandedItems.has(item.id) ? 'Hide Winners' : 'Show Winners' }}
+                        </span>
+                        <svg class="w-4 h-4 text-gray-400 transition-transform duration-200"
+                            :class="{ 'rotate-180': expandedItems.has(item.id) }" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <!-- Winners List -->
+                    <div v-if="expandedItems.has(item.id)"
+                        class="bg-[#1a1a1f] border border-gray-700 rounded px-2.5 py-2 space-y-1.5">
+
+                        <!-- Loading State -->
+                        <div v-if="loadingWinners.has(item.id)" class="text-center py-2">
+                            <svg class="w-4 h-4 animate-spin text-indigo-400 mx-auto" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                            <p class="text-xs text-gray-400 mt-1">Loading winners...</p>
+                        </div>
+
+                        <!-- Winners -->
+                        <div v-else-if="itemWinners[item.id] && itemWinners[item.id].length > 0">
+                            <div v-for="winner in itemWinners[item.id]" :key="winner.id"
+                                class="flex items-center justify-between my-2 py-2 px-2 bg-[#0b0b0d] rounded">
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                    <span class="text-xs text-gray-200 font-medium">{{ winner.name }}</span>
+                                </div>
+                                <span class="text-xs text-indigo-400 font-medium">x{{ winner.quantity }}</span>
                             </div>
-                            <div>
-                                <span class="text-gray-400">Initial quantity:</span>
-                                <span class="text-indigo-400 ml-1 font-medium">{{ item.pivot.initial_quantity }}</span>
-                            </div>
-                            <div>
-                                <span class="text-gray-400">Remaining quantity:</span>
-                                <span class="text-indigo-400 ml-1 font-medium">{{ item.pivot.remaining_quantity }}</span>
-                            </div>
+                        </div>
+
+                        <!-- No Winners -->
+                        <div v-else class="text-center py-2">
+                            <p class="text-xs text-gray-400">No winners yet</p>
                         </div>
                     </div>
                 </div>

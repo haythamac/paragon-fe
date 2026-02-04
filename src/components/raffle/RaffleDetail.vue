@@ -66,6 +66,8 @@ onMounted(async () => {
             <!-- Raffle Prize Items List -->
             <PrizeItems 
                 :items="raffleItems" 
+                :raffleStatus="currentRaffle.status"
+                :raffleId="raffleId"
             />
         </div>
     </section>
