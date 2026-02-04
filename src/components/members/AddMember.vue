@@ -8,32 +8,44 @@ import { useFormSubmit } from '@/composables/useFormSubmit';
 
 import { memberAPI } from '@/services/memberAPI.js';
 
-const {submit, isLoading, errors} = useFormSubmit(memberAPI.store);
+const { submit, isLoading, errors } = useFormSubmit(memberAPI.store);
+
+const playerName = ref('')
+const level = ref('')
+const power = ref('')
+const playerClass = ref('') // keep value after submit
+const role = ref('')        // keep value after submit
+
 
 async function handleSubmit(e) {
-  e.preventDefault();
-  const form = e.target;
-  const formData = new FormData(form);
+    e.preventDefault()
 
-  // Convert FormData to plain object
-  const payload = Object.fromEntries(formData);
-  
-  // Map playerName → name
-  payload.name = payload.playerName;
-  delete payload.playerName;
+    const payload = {
+        name: playerName.value,
+        level: level.value,
+        power: power.value,
+        class: playerClass.value,
+        role: role.value
+    }
 
-  try{
-	await submit(payload);
-	form.reset();
-  } catch(err){
-	console.error("Failed to add member:", err);
-  }
+    try {
+        await submit(payload)
+
+        // reset only specific fields
+        playerName.value = ''
+        level.value = ''
+        power.value = ''
+        // class and role remain unchanged
+    } catch (err) {
+        console.error("Failed to add member:", err)
+    }
 }
+
 
 const loading = ref(false)
 
 onMounted(async () => {
-  // 
+    // 
 })
 
 
@@ -43,11 +55,12 @@ const close = () => emit('update:modelValue', false)
 </script>
 
 <template>
-    <div> 
+    <div>
 
         <teleport to="body">
             <transition name="fade">
-                <div v-if="modelValue" class="fixed inset-0 z-50 flex items-center justify-center p-4" aria-hidden="false">
+                <div v-if="modelValue" class="fixed inset-0 z-50 flex items-center justify-center p-4"
+                    aria-hidden="false">
                     <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" @click.self="close"></div>
 
                     <div role="dialog" aria-modal="true"
@@ -58,23 +71,23 @@ const close = () => emit('update:modelValue', false)
 
                         <form @submit="handleSubmit" class="space-y-4">
 
-                            <field-input label="Player name" name="playerName" type="text" placeholder="Exact in-game name"
-                                required>
+                            <field-input v-model="playerName" label="Player name" name="playerName" type="text"
+                                placeholder="Exact in-game name" required>
                             </field-input>
                             <span v-if="errors.name" class="text-red-500 text-sm">
                                 {{ errors.name[0] }}
                             </span>
 
-                            <field-input label="Level" name="level" type="number" placeholder="Current level" min="1" hideSpinner
-                                required>
+                            <field-input v-model="level" label="Level" name="level" type="number" placeholder="Current level" min="1"
+                                hideSpinner required>
                             </field-input>
 
-                            <field-input label="Power" name="power" type="number" placeholder="Growth Power" min="1" hideSpinner
-                                required>
+                            <field-input v-model="power" label="Power" name="power" type="number" placeholder="Growth Power" min="1"
+                                hideSpinner required>
                             </field-input>
 
 
-                            <Dropdown label="Class" name="class" :options="[
+                            <Dropdown v-model="playerClass" label="Class" name="class" :options="[
                                 { label: 'Berserker', value: 'berserker', color: 'rarity-legendary' },
                                 { label: 'Warlord', value: 'warlord', color: 'rarity-epic' },
                                 { label: 'Skald', value: 'skald', color: 'rarity-rare' },
@@ -82,7 +95,7 @@ const close = () => emit('update:modelValue', false)
                                 { label: 'Archer', value: 'archer', color: 'rarity-common' },
                             ]" placeholder="Select player class" required />
 
-                            <Dropdown label="Role" name="role" :options="[
+                            <Dropdown v-model="role" label="Role" name="role" :options="[
                                 { label: 'Leader', value: 'leader', color: 'rarity-legendary' },
                                 { label: 'Elder', value: 'elder', color: 'rarity-epic' },
                                 { label: 'Agent', value: 'agent', color: 'rarity-rare' },
@@ -92,8 +105,7 @@ const close = () => emit('update:modelValue', false)
                             ]" placeholder="Select player role" required />
 
                             <div class="flex justify-end gap-2 pt-2">
-                                <button type="button"
-                                    :disabled="isLoading"
+                                <button type="button" :disabled="isLoading"
                                     class="px-3 py-2 rounded-md border border-gray-700 text-gray-200 bg-transparent"
                                     @click="close">Cancel</button>
                                 <button type="submit"

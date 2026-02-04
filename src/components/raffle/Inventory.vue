@@ -19,7 +19,7 @@ onMounted(async () => {
     categories.value = categoryResponse.data
 
     const itemResponse = await itemAPI.getAll()
-    items.value = itemResponse.data
+    items.value = itemResponse.data.data
   } catch (err) {
     console.error(err)
     error.value = err
