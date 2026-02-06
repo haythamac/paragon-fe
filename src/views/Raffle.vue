@@ -32,7 +32,7 @@ onMounted(async () => {
     <div class="mx-auto max-w-7xl px-6 py-10 grid lg:grid-cols-[280px_1fr] gap-8">
       <!-- Left: Filters + Admin (desktop visible, mobile toggleable) -->
       <aside class="hidden lg:block space-y-6">
-        <FilterSidebar />
+        <!-- <FilterSidebar /> -->
         <AdminPanel />
       </aside>
 
@@ -57,7 +57,7 @@ onMounted(async () => {
       <main class="relative">
         <!-- Raffle list -->
         <div class="space-y-6">
-          <div class="text-sm text-gray-400">Showing raffles • sorted newest → oldest</div>
+          <!-- <div class="text-sm text-gray-400">Showing raffles • sorted newest → oldest</div> -->
 
           <div class="space-y-4">
             <RaffleCard v-for="r in allRaffles" 
