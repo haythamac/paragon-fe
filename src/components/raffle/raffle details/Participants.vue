@@ -87,6 +87,7 @@ const filteredParticipantsAll = computed(() => {
 })
 
 const filteredParticipants = computed(() => {
+    console.log(filteredParticipantsAll.value)
     return showAll.value ? filteredParticipantsAll.value : filteredParticipantsAll.value.slice(0, 9)
 })
 
