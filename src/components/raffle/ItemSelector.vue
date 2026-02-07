@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue' 
+import { onMounted, ref, watch } from 'vue' 
 import ComboBoxInput from '../common/ComboBoxInput.vue'
 
 const props = defineProps({
@@ -12,6 +12,7 @@ const props = defineProps({
     required: true,
   },
 })
+
 
 
 const emit = defineEmits(['update:selectedItems'])

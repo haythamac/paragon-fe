@@ -31,6 +31,7 @@ const rarityColors = {
     epic: 'bg-red-500/20 text-red-300 border-red-500/50',
     legendary: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/50',
     rare: 'bg-blue-500/20 text-blue-300 border-blue-500/50',
+    uncommon: 'bg-green-500/20 text-green-300 border-green-500/50',
     common: 'bg-gray-500/20 text-gray-300 border-gray-500/50'
 }
 
@@ -204,11 +205,10 @@ const shouldShowWinnersButton = (item) => {
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
                             <div class="flex items-center gap-2 mb-1">
-                                <h3 class="text-sm font-semibold text-white">{{ item.name }}</h3>
-                                <span :class="rarityColors[item.rarity]"
-                                    class="px-1.5 py-0.5 rounded text-xs font-medium border capitalize">
+                                <span :class="rarityColors[item.rarity]" class="px-1.5 py-0.5 rounded text-xs font-medium border capitalize">
                                     {{ item.rarity }}
                                 </span>
+                                <h3 class="text-sm font-semibold text-white">{{ item.name }}</h3>
                                 <!-- Status Badge -->
                                 <span v-if="getItemStatus(item).show" :class="getItemStatus(item).class"
                                     class="px-1.5 py-0.5 rounded text-xs font-medium border flex items-center gap-1">
