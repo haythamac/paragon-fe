@@ -31,7 +31,6 @@ onMounted(async () => {
 	try {
 		const memberResponse = await memberAPI.getAll();
 		members.value = memberResponse.data.data;
-		console.log(members.value);
 	}
 	catch (err) {
 		console.error(err)
