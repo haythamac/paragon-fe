@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue' 
 import ComboBoxInput from '../common/ComboBoxInput.vue'
 
 const props = defineProps({
@@ -12,6 +12,7 @@ const props = defineProps({
     required: true,
   },
 })
+
 
 const emit = defineEmits(['update:selectedItems'])
 
@@ -26,8 +27,17 @@ const updateQuantity = (itemId, delta) => {
   emit('update:selectedItems', updatedItems)
 }
 
+const rarityColors = {
+  common: 'text-white-500',
+  uncommon: 'text-green-500',
+  rare: 'text-blue-500',
+  epic: 'text-red-500',
+  legendary: 'text-yellow-500'
+}
 
-
+function rarityClass(rarity) {
+  return rarityColors[rarity] || 'text-gray-200'
+}
 
 
 const removeItem = (itemId) => {
@@ -72,7 +82,9 @@ const handleItemSelection = (items) => {
             <td class="px-3 py-2">
               <div class="flex items-center gap-2">
                 <div class="w-2 h-2 rounded-full bg-blue-500"></div>
-                <span class="text-gray-200">{{ item.name }}</span>
+                <span :class="rarityClass(item.rarity)">
+                  {{ item.name }}
+                </span>
               </div>
             </td>
             <td class="px-3 py-2">
@@ -82,7 +94,7 @@ const handleItemSelection = (items) => {
                   <span class="text-lg leading-none">−</span>
                 </button>
                 <span class="w-8 text-center text-gray-200 font-medium">{{ item.quantity
-                  }}</span>
+                }}</span>
                 <button type="button" @click="updateQuantity(item.id, 1)"
                   class="w-6 h-6 rounded bg-gray-800 hover:bg-gray-700 text-gray-300 flex items-center justify-center transition-colors">
                   <span class="text-lg leading-none">+</span>

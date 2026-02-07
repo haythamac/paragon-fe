@@ -16,9 +16,9 @@ const props = defineProps({
         type: Number,
         default: 0
     },
-    raffleId: { 
-        type: [String, Number], 
-        required: true 
+    raffleId: {
+        type: [String, Number],
+        required: true
     },
 })
 // Watch for changes
@@ -105,6 +105,15 @@ const closeDistributeModal = () => {
     selectedParticipant.value = null
 }
 
+const copyNames = () => {
+    const names = props.participants.map(p => p.name).join('\n')
+    navigator.clipboard.writeText(names).then(() => {
+        console.log('Copied names to clipboard')
+    }).catch(err => {
+        console.error('Failed to copy:', err)
+    })
+}
+
 </script>
 
 <template>
@@ -118,6 +127,18 @@ const closeDistributeModal = () => {
             <h2 class="text-lg font-bold text-white">
                 Participants ({{ totalCount || displayParticipants.length }})
             </h2>
+
+            <!-- Copy button -->
+            <button @click="copyNames"
+                class="ml-2 flex items-center gap-1 text-xs text-gray-400 hover:text-white transition-colors"
+                title="Copy all participant names">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 16h8M8 12h8m-6 8h6a2 2 0 002-2V6a2 2 0 00-2-2H8a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Copy all names
+            </button>
+
         </div>
 
         <!-- Search Bar -->
@@ -183,12 +204,8 @@ const closeDistributeModal = () => {
         </div>
 
         <!-- Distribution Modal -->
-        <ItemDistributionModal 
-            :is-open="showDistributeModal" 
-            :participant="selectedParticipant"
-            :available-items="cleanedItems" 
-            :raffleId="props.raffleId"
-            @close="closeDistributeModal"
+        <ItemDistributionModal :is-open="showDistributeModal" :participant="selectedParticipant"
+            :available-items="cleanedItems" :raffleId="props.raffleId" @close="closeDistributeModal"
             @distributed="emit('refresh')" />
     </div>
 </template>
