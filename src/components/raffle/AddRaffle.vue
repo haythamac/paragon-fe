@@ -120,7 +120,6 @@ const handleSubmit = async () => {
             status: 'pending'
         }
         
-        // Replace with your actual API call
         const response = await raffleAPI.store(raffleData)
 
         toast.success('Raffle created successfully!')
