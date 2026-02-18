@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue' 
+import { onMounted, ref, watch } from 'vue'
 import ComboBoxInput from '../common/ComboBoxInput.vue'
 
 const props = defineProps({
@@ -13,6 +13,19 @@ const props = defineProps({
   },
 })
 
+const rarityMap = {
+  common: '[C]',
+  uncommon: '[UC]',
+  rare: '[R]',
+  epic: '[E]',
+  legendary: '[L]'
+}
+
+const formatItemDisplay = (item) => {
+  const prefix = rarityMap[item.rarity?.toLowerCase()] || ''
+  const suffix = item.is_tradeable ? ' [Tradeable]' : ''
+  return `${prefix} ${item.name}${suffix}`
+}
 
 
 const emit = defineEmits(['update:selectedItems'])
@@ -66,7 +79,7 @@ const handleItemSelection = (items) => {
 
     <!-- ComboBox Input -->
     <ComboBoxInput :model-value="selectedItems" @update:model-value="handleItemSelection" :items="allItems"
-      item-text="name" item-value="id" placeholder="Search and select items..." />
+      item-text="name" item-value="id" placeholder="Search and select items..." :formatDisplay="formatItemDisplay" />
 
     <!-- Selected items table -->
     <div class="border border-gray-800 rounded-lg overflow-hidden max-h-[400px] overflow-y-auto">
