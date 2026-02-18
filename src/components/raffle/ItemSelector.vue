@@ -99,6 +99,9 @@ const handleItemSelection = (items) => {
                 <span :class="rarityClass(item.rarity)">
                   {{ item.name }}
                 </span>
+                <span v-if="item.is_tradeable" class="text-xs text-gray-400 italic">
+                  [Tradeable]
+                </span>
               </div>
             </td>
             <td class="px-3 py-2">
