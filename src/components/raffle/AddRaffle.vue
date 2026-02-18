@@ -123,6 +123,7 @@ const handleSubmit = async () => {
         const response = await raffleAPI.store(raffleData)
 
         toast.success('Raffle created successfully!')
+        emit('refresh')
         close()
     } catch (error) {
         console.error('Error creating raffle:', error)
@@ -134,7 +135,7 @@ const handleSubmit = async () => {
 
 
 const props = defineProps(['modelValue'])
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'refresh'])
 const close = () => {
     emit('update:modelValue', false)
     // Reset form

@@ -1,3 +1,4 @@
+
 <script setup>
 import { ref } from 'vue'
 import AddItem from './AddItem.vue'
@@ -7,6 +8,8 @@ import AddRaffle from './AddRaffle.vue';
 const addItemOpen  = ref(false)
 const inventoryOpen  = ref(false)
 const addRaffleOpen  = ref(false)
+
+const emit = defineEmits(['refresh'])
 </script>
 
 <template>
@@ -22,6 +25,6 @@ const addRaffleOpen  = ref(false)
 
     <AddItem v-model="addItemOpen" />
     <Inventory v-model="inventoryOpen" />
-    <AddRaffle v-model="addRaffleOpen" />
+    <AddRaffle v-model="addRaffleOpen" @refresh="$emit('refresh')" />
   </div>
 </template>

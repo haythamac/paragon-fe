@@ -8,20 +8,36 @@ import InventoryItem from '@/components/raffle/InventoryItem.vue'
 import { raffleAPI } from '@/services/raffleAPI'
 
 const showFilters = ref(false)
-
 const allRaffles = ref([])
+const isDeleting = ref(false)
 
-onMounted(async () => {
-  document.title = 'Raffles'
-
+const fetchRaffles = async () => {
   try {
     const raffleResponse = await raffleAPI.getAll();
     allRaffles.value = raffleResponse.data.data;
-
   } catch (error) {
     console.error('Error fetching raffles:', error)
   }
+}
+
+onMounted(async () => {
+  document.title = 'Raffles'
+  await fetchRaffles();
 })
+
+const handleDeleteRaffle = async (id) => {
+  if (isDeleting.value) return;
+  isDeleting.value = true;
+  try {
+    await raffleAPI.delete(id);
+    allRaffles.value = allRaffles.value.filter(r => r.id !== id);
+  } catch (error) {
+    console.error('Error deleting raffle:', error);
+    alert('Failed to delete raffle.');
+  } finally {
+    isDeleting.value = false;
+  }
+}
 
 </script>
 
@@ -33,7 +49,7 @@ onMounted(async () => {
       <!-- Left: Filters + Admin (desktop visible, mobile toggleable) -->
       <aside class="hidden lg:block space-y-6">
         <!-- <FilterSidebar /> -->
-        <AdminPanel />
+        <AdminPanel @refresh="fetchRaffles" />
       </aside>
 
       <!-- Mobile filter button -->
@@ -49,7 +65,7 @@ onMounted(async () => {
       <div v-if="showFilters" class="lg:hidden mb-4">
         <div class="space-y-4">
           <FilterSidebar @close="showFilters = false" />
-          <AdminPanel />
+          <AdminPanel @refresh="fetchRaffles" />
         </div>
       </div>
 
@@ -60,14 +76,8 @@ onMounted(async () => {
           <!-- <div class="text-sm text-gray-400">Showing raffles • sorted newest → oldest</div> -->
 
           <div class="space-y-4">
-            <RaffleCard v-for="r in allRaffles" 
-                :key="r.id" 
-                :id="r.id"
-                :title="r.name" 
-                :date="r.date" 
-                :joined="r.members_count"
-                :items="r.items_count" 
-                :status="r.status" />
+            <RaffleCard v-for="r in allRaffles" :key="r.id" :id="r.id" :title="r.name" :date="r.date"
+              :joined="r.members_count" :items="r.items_count" :status="r.status" @delete="handleDeleteRaffle" />
           </div>
 
         </div>

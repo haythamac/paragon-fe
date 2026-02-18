@@ -5,5 +5,5 @@ export const raffleAPI = {
   store: (data) => api.post('/raffle', data),
   getById: (id) => api.get(`/raffle/${id}`),
   update: (id, data) => api.put(`/raffle/${id}`, data),
-  delete: (id) => api.delete(`/members/${id}`, data),
+  delete: (id) => api.delete(`/raffle/${id}`),
 }
