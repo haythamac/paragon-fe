@@ -8,7 +8,7 @@ import { toast } from 'vue-sonner'
 import { memberAPI } from '@/services/memberAPI'
 import { itemAPI } from '@/services/itemAPI'
 import { raffleAPI } from '@/services/raffleAPI'
-
+ 
 const loading = ref(false)
 const currentStep = ref(0)
 const errors = ref([])
