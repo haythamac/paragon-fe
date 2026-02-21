@@ -6,4 +6,5 @@ export const raffleAPI = {
   getById: (id) => api.get(`/raffle/${id}`),
   update: (id, data) => api.put(`/raffle/${id}`, data),
   delete: (id) => api.delete(`/raffle/${id}`),
+  changeStatus: (id, data) => api.patch(`/raffles/${id}/change-status`, data),
 }
