@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { itemDistributionAPI } from '@/services/itemDistributionAPI'
+import ParticipantDistributionModal from './ParticipantDistributionModal.vue'
 
 const props = defineProps({
     items: {
@@ -9,14 +10,21 @@ const props = defineProps({
     },
     raffleStatus: {
         type: String,
-        default: 'pending', // 'pending', 'ongoing', 'completed'
+        default: 'pending',
         validator: (value) => ['pending', 'ongoing', 'completed'].includes(value)
     },
     raffleId: {
         type: [String, Number],
         required: true
     },
+    participants: {  // NEW
+        type: Array,
+        required: true
+    }
 })
+
+const showDistributeModal = ref(false)
+const distributingItem = ref(null)
 
 const searchQuery = ref('')
 const selectedRarity = ref('all')
@@ -25,6 +33,8 @@ const showAll = ref(false)
 const expandedItems = ref(new Set()) // Track expanded items
 const itemWinners = ref({}) // Cache winners: { itemId: [...winners] }
 const loadingWinners = ref(new Set()) // Track loading state
+
+const emit = defineEmits(['distributed'])
 
 // Rarity color mapping
 const rarityColors = {
@@ -148,6 +158,30 @@ const shouldShowWinnersButton = (item) => {
     // Show if: ongoing/completed OR has distributed items (remaining < initial)
     return props.raffleStatus !== 'pending' || item.pivot.remaining_quantity < item.pivot.initial_quantity
 }
+
+// Open distribute modal
+const openDistributeModal = (item) => {
+    distributingItem.value = item
+    showDistributeModal.value = true
+}
+
+// Handle successful distribution
+const handleDistributed = (payload) => {
+    // Refetch winners for this item
+    refetchItemWinners(payload.itemId)
+    // Emit to parent to refresh raffle data
+    emit('distributed')
+}
+
+// Refetch winners for a specific item
+const refetchItemWinners = (itemId) => {
+    // Clear cache for this item
+    delete itemWinners.value[itemId]
+    // If currently expanded, refetch
+    if (expandedItems.value.has(itemId)) {
+        fetchWinners(itemId)
+    }
+}
 </script>
 
 <template>
@@ -205,7 +239,8 @@ const shouldShowWinnersButton = (item) => {
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
                             <div class="flex items-center gap-2 mb-1">
-                                <span :class="rarityColors[item.rarity]" class="px-1.5 py-0.5 rounded text-xs font-medium border capitalize">
+                                <span :class="rarityColors[item.rarity]"
+                                    class="px-1.5 py-0.5 rounded text-xs font-medium border capitalize">
                                     {{ item.rarity }}
                                 </span>
                                 <h3 class="text-sm font-semibold text-white">{{ item.name }}</h3>
@@ -224,15 +259,16 @@ const shouldShowWinnersButton = (item) => {
                                 <div>
                                     <span class="text-gray-400">Initial Quantity:</span>
                                     <span class="text-indigo-400 ml-1 font-medium">{{ item.pivot.initial_quantity
-                                        }}</span>
+                                    }}</span>
                                 </div>
                                 <div>
                                     <span class="text-gray-400">Remaining Quantity:</span>
                                     <span class="text-indigo-400 ml-1 font-medium">{{ item.pivot.remaining_quantity
-                                        }}</span>
+                                    }}</span>
                                 </div>
                             </div>
                         </div>
+
                     </div>
 
                     <!-- Status Message (only for pending and item still has stock) -->
@@ -240,6 +276,16 @@ const shouldShowWinnersButton = (item) => {
                         class="bg-blue-500/10 border border-blue-500/30 rounded px-2.5 py-1.5 text-center">
                         <p class="text-xs text-blue-300">Winners will be announced when the raffle draw begins</p>
                     </div>
+
+                    <!-- Distribute Button -->
+                    <button v-if="raffleStatus === 'ongoing' && item.pivot.remaining_quantity > 0"
+                        @click="openDistributeModal(item)"
+                        class="flex items-center justify-center gap-2 w-full bg-indigo-600 hover:bg-indigo-700 border border-indigo-500 rounded px-2.5 py-1.5 text-xs font-medium transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        <span class="text-white">Distribute</span>
+                    </button>
 
                     <!-- Winners Toggle Button -->
                     <button v-if="shouldShowWinnersButton(item)" @click="toggleWinners(item)"
@@ -253,6 +299,8 @@ const shouldShowWinnersButton = (item) => {
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                         </svg>
                     </button>
+
+
 
                     <!-- Winners List -->
                     <div v-if="expandedItems.has(item.id)"
@@ -309,5 +357,9 @@ const shouldShowWinnersButton = (item) => {
             </svg>
             <p class="text-gray-400 text-xs">No items found</p>
         </div>
+
+        <!-- Participant Distribution Modal -->
+        <ParticipantDistributionModal v-model="showDistributeModal" :raffleId="raffleId" :item="distributingItem"
+            :participants="participants" @distributed="handleDistributed" />
     </div>
 </template>

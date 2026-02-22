@@ -48,12 +48,12 @@ const handleStatusChanged = async (newStatus) => {
         <!-- Top-centered floating navbar -->
         <NavBar />
 
-        
+
 
         <div class="mx-auto max-w-7xl px-6 py-28 gap-8 flex flex-col">
             <!-- Status Change -->
-            <ChangeStatus v-if="currentRaffle && currentRaffle.id" :raffleId="currentRaffle.id" :currentStatus="currentRaffle.status"
-            @statusChanged="handleStatusChanged" />
+            <ChangeStatus v-if="currentRaffle && currentRaffle.id" :raffleId="currentRaffle.id"
+                :currentStatus="currentRaffle.status" @statusChanged="handleStatusChanged" />
 
             <!-- Raffle General Information -->
             <GeneralInformation :title="currentRaffle.name" :date="currentRaffle.date"
@@ -66,7 +66,12 @@ const handleStatusChanged = async (newStatus) => {
                 :raffleId="raffleId" @refresh="fetchRaffleData" />
 
             <!-- Raffle Prize Items List -->
-            <PrizeItems :items="raffleItems" :raffleStatus="currentRaffle.status" :raffleId="raffleId" />
+            <PrizeItems 
+                :items="raffleItems" 
+                :raffleStatus="currentRaffle.status" 
+                :raffleId="raffleId"
+                :participants="raffleMembers" 
+                @distributed="fetchRaffleData" />
         </div>
     </section>
 
