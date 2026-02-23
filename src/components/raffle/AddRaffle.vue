@@ -8,7 +8,7 @@ import { toast } from 'vue-sonner'
 import { memberAPI } from '@/services/memberAPI'
 import { itemAPI } from '@/services/itemAPI'
 import { raffleAPI } from '@/services/raffleAPI'
- 
+
 const loading = ref(false)
 const currentStep = ref(0)
 const errors = ref([])
@@ -154,8 +154,9 @@ function rarityClass(rarity) {
 
 function formatItemName(item) {
     const prefix = rarityMap[item.rarity?.toLowerCase()] || ''
+    const suffix = item.is_tradeable ? '[Tradeable]' : ''
     // Removed the tradeable suffix since it's now separated by tabs
-    return `${prefix} ${item.name}`
+    return `${prefix} ${item.name} ${suffix}`
 }
 
 // Filter items based on search
@@ -352,7 +353,7 @@ const close = () => {
 
                                 <!-- Players Grid -->
                                 <div class="border border-gray-800 rounded-lg p-4 max-h-[400px] overflow-y-auto">
-                                    <div v-if="filteredMembers.length > 0" class="grid grid-cols-3 gap-3">
+                                    <div v-if="filteredMembers.length > 0" class="grid grid-cols-5 gap-3">
                                         <div v-for="member in filteredMembers" :key="member.id"
                                             @click="toggleMember(member)" :class="[
                                                 'px-4 py-3 rounded-lg border-2 cursor-pointer transition-all',
@@ -484,11 +485,11 @@ const close = () => {
                                                         'w-2 h-2 rounded-full',
                                                         isItemSelected(item) ? 'bg-green-500' : 'bg-gray-500'
                                                     ]"></div>
-                                                    <span :class="[
-                                                        'text-sm font-medium',
-                                                        rarityClass(item.rarity)
-                                                    ]">
-                                                        {{ formatItemName(item) }}
+                                                    <span :class="['text-sm font-medium', rarityClass(item.rarity)]">
+                                                        {{ rarityMap[item.rarity?.toLowerCase()] || '' }} {{ item.name
+                                                        }}
+                                                        <span v-if="item.is_tradeable"
+                                                            class="italic text-gray-400">[Tradeable]</span>
                                                     </span>
                                                 </div>
                                                 <svg v-if="isItemSelected(item)" class="w-5 h-5 text-green-500"
