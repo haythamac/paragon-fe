@@ -77,7 +77,7 @@ const handleDeleteRaffle = async (id) => {
 
           <div class="space-y-4">
             <RaffleCard v-for="r in allRaffles" :key="r.id" :id="r.id" :title="r.name" :date="r.date"
-              :joined="r.members_count" :items="r.items_count" :status="r.status" @delete="handleDeleteRaffle" />
+              :joined="r.members_count" :items="r.items_count" :status="r.status" @delete="handleDeleteRaffle" @refresh="fetchRaffles" />
           </div>
 
         </div>

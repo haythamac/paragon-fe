@@ -1,9 +1,9 @@
 <script setup>
 import { RouterLink } from 'vue-router'
 import { computed, ref } from 'vue'
-import EditRaffle from './EditRaffle.vue';
+import RaffleForm from './RaffleForm.vue';
 
-const editRaffleOpen  = ref(false)
+const raffleFormOpen  = ref(false)
 
 const props = defineProps({
   id: [String, Number],
@@ -37,7 +37,7 @@ const formattedDate = computed(() => {
         </svg>
       </button>
       <button 
-        @click="editRaffleOpen = true"
+        @click="raffleFormOpen = true"
         class="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-md transition-colors"
         aria-label="Edit raffle"
       >
@@ -82,8 +82,10 @@ const formattedDate = computed(() => {
     </div>
   </article>
 
-  <EditRaffle 
-    v-model="editRaffleOpen" 
+  <RaffleForm 
+    v-model="raffleFormOpen" 
     :raffleId="id"
+    mode="edit"
+    @refresh="$emit('refresh')"
     />
 </template>

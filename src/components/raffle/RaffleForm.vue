@@ -9,6 +9,21 @@ import { memberAPI } from '@/services/memberAPI'
 import { itemAPI } from '@/services/itemAPI'
 import { raffleAPI } from '@/services/raffleAPI'
 
+const props = defineProps({
+    modelValue: Boolean,
+    mode: {
+        type: String,
+        default: 'add',
+        validator: (v) => ['add', 'edit'].includes(v)
+    },
+    raffleId: {
+        type: Number,
+        default: null
+    }
+})
+
+const isEditMode = computed(() => props.mode === 'edit')
+
 const loading = ref(false)
 const currentStep = ref(0)
 const errors = ref([])
@@ -40,6 +55,11 @@ onMounted(async () => {
 
         const itemResponse = await itemAPI.getAll();
         allItems.value = itemResponse.data.data;
+
+        // Load raffle data if edit mode
+        if (isEditMode.value && props.raffleId) {
+            await loadRaffleData()
+        }
     } catch (err) {
         errors.value = err
         toast.error('Failed to load members.')
@@ -48,6 +68,25 @@ onMounted(async () => {
         loading.value = false
     }
 })
+
+const loadRaffleData = async () => {
+    try {
+        const response = await raffleAPI.getById(props.raffleId)
+        const raffle = response.data.data
+        
+        // Populate form
+        raffleName.value = raffle.name
+        raffleDate.value = raffle.date
+        selectedMembers.value = raffle.members || []
+        selectedItems.value = (raffle.items || []).map(item => ({
+            ...item,
+            quantity: item.pivot?.initial_quantity || 1
+        }))
+    } catch (error) {
+        console.error('Error loading raffle:', error)
+        toast.error('Failed to load raffle data')
+    }
+}
 
 // Validation for each step
 const isStep1Valid = computed(() => {
@@ -274,21 +313,27 @@ const handleSubmit = async () => {
             status: 'pending'
         }
 
-        const response = await raffleAPI.store(raffleData)
+        // Different API call based on mode
+        if (isEditMode.value) {
+            await raffleAPI.update(props.raffleId, raffleData)
+            toast.success('Raffle updated successfully!')
+        } else {
+            await raffleAPI.store(raffleData)
+            toast.success('Raffle created successfully!')
+        }
 
-        toast.success('Raffle created successfully!')
         emit('refresh')
         close()
     } catch (error) {
-        console.error('Error creating raffle:', error)
-        toast.error('Failed to create raffle')
+        console.error(`Error ${isEditMode.value ? 'updating' : 'creating'} raffle:`, error)
+        toast.error(`Failed to ${isEditMode.value ? 'update' : 'create'} raffle`)
     } finally {
         loading.value = false
     }
 }
 
 
-const props = defineProps(['modelValue'])
+
 const emit = defineEmits(['update:modelValue', 'refresh'])
 const close = () => {
     emit('update:modelValue', false)
@@ -313,7 +358,9 @@ const close = () => {
                     <div role="dialog" aria-modal="true"
                         class="relative z-10 w-full max-w-5xl bg-[#0b0b0d] text-white rounded-lg shadow-lg p-6 border border-gray-800"
                         aria-labelledby="dialog-title">
-                        <h2 id="dialog-title" class="text-lg font-semibold text-white">Create Raffle</h2>
+                            <h2 id="dialog-title" class="text-lg font-semibold text-white">
+                                {{ isEditMode ? 'Edit Raffle' : 'Create Raffle' }}
+                            </h2>
                         <p class="text-sm text-gray-400 mb-4">Fill in the item details.</p>
 
                         <!-- Step Indicator -->
@@ -566,7 +613,7 @@ const close = () => {
 
                                     <button v-else type="button" @click="handleSubmit" :disabled="loading"
                                         class="px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                                        {{ loading ? 'Submitting...' : 'Submit' }}
+                                        {{ loading ? (isEditMode ? 'Updating...' : 'Creating...') : (isEditMode ? 'Update' : 'Create') }}
                                     </button>
                                 </div>
                             </div>
