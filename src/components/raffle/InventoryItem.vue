@@ -16,51 +16,50 @@ const props = defineProps({
   category: {
     type: String,
     default: ''
-  },
-  description: {
-    type: String,
-    default: ''
   }
-});
+  ,
+  tradeable: {
+    type: Boolean,
+    default: true
+  }
+})
+
+const rarityColors = {
+  common: 'border-gray-500',
+  uncommon: 'border-green-500',
+  rare: 'border-blue-500',
+  epic: 'border-purple-500',
+  legendary: 'border-yellow-500'
+}
 </script>
 
 <template>
-  <article class="bg-[#0b0b0d] border border-gray-800 rounded-lg p-3 hover:border-gray-700 transition-all">
-    <div class="flex items-center gap-3">
-      <!-- Image -->
-      <div class="w-12 h-12 bg-gray-900 rounded-lg flex-shrink-0 overflow-hidden">
-        <img v-if="image" :src="image" :alt="itemName" class="w-full h-full object-cover" />
-        <div v-else class="w-full h-full flex items-center justify-center text-gray-600">
-          <span class="text-lg">?</span>
-        </div>
+  <div class="flex items-center bg-[#18181f] border-b border-gray-800 px-3 py-2 hover:bg-[#23232b] transition-all">
+    <!-- Image (small, left) -->
+    <div class="w-10 h-10 flex-shrink-0 rounded bg-gray-900 flex items-center justify-center overflow-hidden mr-3">
+      <img v-if="image" :src="image" :alt="itemName" class="w-full h-full object-contain" />
+      <span v-else class="text-xl text-gray-600">?</span>
+    </div>
+
+    <!-- Main Info -->
+    <div class="flex-1 min-w-0">
+      <div class="flex items-center gap-2 mb-0.5">
+        <span class="text-xs font-semibold uppercase px-1.5 py-0.5 rounded"
+          :class="{
+            'bg-gray-600 text-white': rarity === 'common',
+            'bg-green-600 text-white': rarity === 'uncommon',
+            'bg-blue-600 text-white': rarity === 'rare',
+            'bg-purple-600 text-white': rarity === 'epic',
+            'bg-yellow-600 text-gray-900': rarity === 'legendary'
+          }">
+          {{ rarity }}
+        </span>
+        <span v-if="tradeable" class="italic text-xs text-gray-400 font-light">[Tradeable]</span>
       </div>
-
-      <!-- Content -->
-      <div class="flex-1 min-w-0">
-        <!-- Rarity and Item Name -->
-        <div class="flex items-center gap-2 mb-1 flex-wrap">
-          <span
-            class="text-white text-xs font-semibold px-1.5 py-0.5 rounded uppercase"
-            :class="{
-              'bg-gray-600': rarity === 'common',
-              'bg-green-600': rarity === 'uncommon',
-              'bg-blue-600': rarity === 'rare',
-              'bg-purple-600': rarity === 'epic',
-              'bg-orange-600': rarity === 'legendary'
-            }"
-          >
-            {{ rarity }}
-          </span>
-          <h3 class="text-white font-semibold text-sm truncate">{{ itemName }}</h3>
-        </div>
-
-        <!-- Category and Description -->
-        <div class="flex items-center gap-2 text-xs text-gray-400">
-          <span v-if="category" class="font-medium">{{ category }}</span>
-          <span v-if="category && description">•</span>
-          <span class="truncate">{{ description }}</span>
-        </div>
+      <div class="flex items-center gap-2">
+        <span class="text-white font-medium text-sm truncate">{{ itemName }}</span>
+        <span v-if="category" class="text-xs text-gray-400 truncate">({{ category }})</span>
       </div>
     </div>
-  </article>
-</template>>
+  </div>
+</template>
