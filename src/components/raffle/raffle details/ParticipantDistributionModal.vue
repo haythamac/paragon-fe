@@ -58,6 +58,22 @@ const updateQuantity = (delta) => {
     }
 }
 
+const validateQuantity = (event) => {
+    let value = parseInt(event.target.value) || 1
+    
+    // Ensure value is within valid range
+    if (value < 1) {
+        quantity.value = 1
+    } else if (value > props.item.pivot.remaining_quantity) {
+        quantity.value = props.item.pivot.remaining_quantity
+    } else {
+        quantity.value = value
+    }
+}
+
+const setMaxQuantity = () => {
+    quantity.value = props.item.pivot.remaining_quantity
+}
 const canSubmit = computed(() => {
     return selectedParticipant.value &&
         quantity.value >= 1 &&
@@ -151,17 +167,25 @@ const close = () => {
 
                         <!-- Quantity -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-1">
-                                Quantity <span class="text-red-400">*</span>
-                            </label>
-                            <div class="flex items-center justify-center gap-3">
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="block text-sm font-medium text-gray-300">
+                                    Quantity <span class="text-red-400">*</span>
+                                </label>
+                                <button type="button" @click="setMaxQuantity"
+                                    class="text-xs text-indigo-400 hover:text-indigo-300 transition-colors">
+                                    Max ({{ item.pivot.remaining_quantity }})
+                                </button>
+                            </div>
+                            <div class="flex items-center gap-2">
                                 <button type="button" @click="updateQuantity(-1)" :disabled="quantity <= 1"
                                     class="w-10 h-10 rounded-lg bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-300 flex items-center justify-center transition-colors">
                                     <span class="text-xl leading-none">−</span>
                                 </button>
-                                <span class="w-16 text-center text-lg text-gray-200 font-medium">
-                                    {{ quantity }}
-                                </span>
+
+                                <input type="number" v-model.number="quantity" @input="validateQuantity" min="1"
+                                    :max="item.pivot.remaining_quantity"
+                                    class="flex-1 text-center text-lg font-medium bg-gray-800 border border-gray-700 rounded-lg text-gray-200 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
+
                                 <button type="button" @click="updateQuantity(1)"
                                     :disabled="quantity >= item.pivot.remaining_quantity"
                                     class="w-10 h-10 rounded-lg bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-300 flex items-center justify-center transition-colors">
