@@ -16,7 +16,6 @@ const power = ref('')
 const playerClass = ref('') // keep value after submit
 const role = ref('')        // keep value after submit
 
-
 async function handleSubmit(e) {
     e.preventDefault()
 
@@ -30,16 +29,20 @@ async function handleSubmit(e) {
 
     try {
         await submit(payload)
-
-        // reset only specific fields
+        toast.success('Member added successfully')
+        emit('refresh')
+        close()
+        
+        // reset fields
         playerName.value = ''
         level.value = ''
         power.value = ''
-        // class and role remain unchanged
     } catch (err) {
         console.error("Failed to add member:", err)
     }
 }
+
+
 
 
 const loading = ref(false)
@@ -50,7 +53,7 @@ onMounted(async () => {
 
 
 const props = defineProps(['modelValue'])
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'refresh'])
 const close = () => emit('update:modelValue', false)
 </script>
 
