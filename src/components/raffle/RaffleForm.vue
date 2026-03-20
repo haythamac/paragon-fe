@@ -54,7 +54,7 @@ onMounted(async () => {
     loading.value = true
     try {
         const memberResponse = await memberAPI.getAll();
-        allMembers.value = memberResponse.data.data;
+        allMembers.value = memberResponse.data.data.filter(member => member.status === 'active'); // Only include active members
 
         const itemResponse = await itemAPI.getAll();
         allItems.value = itemResponse.data.data;

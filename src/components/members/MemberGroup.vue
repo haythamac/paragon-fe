@@ -16,7 +16,7 @@ const props = defineProps({
     }
 })
 
-const emit = defineEmits(['edit', 'delete', 'mark-inactive'])
+const emit = defineEmits(['edit', 'delete', 'mark-inactive', 'reactivate'])
 </script>
 
 <template>
@@ -34,9 +34,11 @@ const emit = defineEmits(['edit', 'delete', 'mark-inactive'])
                 :level="member.level"
                 :power="member.power"
                 :class="member.class"
+                :status="member.status"
                 @edit="$emit('edit', $event)"
                 @delete="$emit('delete', $event)"
                 @mark-inactive="$emit('mark-inactive', $event)"
+                @reactivate="$emit('reactivate', $event)"
             />
         </ul>
     </div>
