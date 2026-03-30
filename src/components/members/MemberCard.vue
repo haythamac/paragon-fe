@@ -89,7 +89,7 @@ const handleMarkInactive = () => {
     <div
         class="relative bg-gray-900 border border-gray-700 rounded-lg p-2 hover:bg-gray-800 transition-colors duration-200">
         <!-- Actions Dropdown Button - top right corner -->
-        <div class="absolute top-2 right-2" ref="actionsRef">
+        <div class="absolute top-2 right-2" ref="actionsRef"w>
             <button @click.stop="showActions = !showActions" class="p-1 hover:bg-gray-700 rounded transition-colors">
                 <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                     <path

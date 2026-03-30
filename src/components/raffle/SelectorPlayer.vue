@@ -85,9 +85,9 @@ const clearAll = () => {
             </div>
         </div>
 
-        <!-- Players Grid -->
+        <!-- Players List -->
         <div class="border border-gray-800 rounded-lg p-4 max-h-[400px] overflow-y-auto">
-            <div v-if="filteredMembers.length > 0" class="grid grid-cols-5 gap-3">
+            <div v-if="filteredMembers.length > 0" class="flex flex-col gap-3">
                 <div v-for="member in filteredMembers" :key="member.id" @click="toggleMember(member)" :class="[
                     'px-4 py-3 rounded-lg border-2 cursor-pointer transition-all',
                     isMemberSelected(member)
