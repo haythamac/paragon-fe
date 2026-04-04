@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps({
     allMembers: {
@@ -8,23 +8,33 @@ const props = defineProps({
     },
     modelValue: {
         type: Array,
-        required: true
+        default: () => []
     }
 })
 
 const emit = defineEmits(['update:modelValue'])
 
-const memberSearch = ref('')
+// Group members alphabetically
+const groupedMembers = computed(() => {
+    const groups = {}
 
-// Filter members based on search
-const filteredMembers = computed(() => {
-    if (!memberSearch.value) {
-        return props.allMembers
-    }
-    const query = memberSearch.value.toLowerCase()
-    return props.allMembers.filter(member =>
-        member.name.toLowerCase().includes(query)
-    )
+    props.allMembers.forEach(member => {
+        const firstLetter = member.name.charAt(0).toUpperCase()
+        if (!groups[firstLetter]) {
+            groups[firstLetter] = []
+        }
+        groups[firstLetter].push(member)
+    })
+
+    // Sort groups by letter
+    const sortedGroups = Object.keys(groups)
+        .sort()
+        .map(letter => ({
+            letter,
+            members: groups[letter].sort((a, b) => a.name.localeCompare(b.name))
+        }))
+
+    return sortedGroups
 })
 
 // Check if member is selected
@@ -34,14 +44,13 @@ const isMemberSelected = (member) => {
 
 // Toggle member selection
 const toggleMember = (member) => {
+    let newSelection
     if (isMemberSelected(member)) {
-        // Remove from selection
-        const newSelection = props.modelValue.filter(m => m.id !== member.id)
-        emit('update:modelValue', newSelection)
+        newSelection = props.modelValue.filter(m => m.id !== member.id)
     } else {
-        // Add to selection
-        emit('update:modelValue', [...props.modelValue, member])
+        newSelection = [...props.modelValue, member]
     }
+    emit('update:modelValue', newSelection)
 }
 
 // Select all members
@@ -49,7 +58,7 @@ const selectAll = () => {
     emit('update:modelValue', [...props.allMembers])
 }
 
-// Clear all members
+// Clear all selections
 const clearAll = () => {
     emit('update:modelValue', [])
 }
@@ -57,70 +66,57 @@ const clearAll = () => {
 
 <template>
     <div class="space-y-4">
+        <!-- Header with controls -->
         <div class="flex items-center justify-between">
-            <p class="text-sm font-medium text-gray-300">
-                Players selected: {{ modelValue.length }}
+            <p class="text-sm text-gray-400">
+                Selected: <span class="text-white font-semibold">{{ modelValue.length }}</span> / {{ allMembers.length
+                }}
             </p>
             <div class="flex gap-2">
                 <button type="button" @click="selectAll"
-                    class="text-xs px-2 py-1 rounded bg-indigo-600/20 text-indigo-400 hover:bg-indigo-600/30 transition-colors">
+                    class="text-xs px-3 py-1.5 rounded-md bg-indigo-600/20 text-indigo-400 hover:bg-indigo-600/30 transition-colors">
                     Select All
                 </button>
                 <button type="button" @click="clearAll"
-                    class="text-xs px-2 py-1 rounded bg-red-600/20 text-red-400 hover:bg-red-600/30 transition-colors">
+                    class="text-xs px-3 py-1.5 rounded-md bg-gray-700/50 text-gray-300 hover:bg-gray-700 transition-colors">
                     Clear All
                 </button>
             </div>
         </div>
 
-        <!-- Search Bar -->
-        <div class="relative">
-            <input v-model="memberSearch" type="text" placeholder="Search players..."
-                class="w-full px-4 py-2 pl-10 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all" />
-            <div class="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-            </div>
-        </div>
+        <!-- Alphabetically grouped member list -->
+        <div class="max-h-[400px] overflow-y-auto space-y-4 pr-2">
+            <div v-for="group in groupedMembers" :key="group.letter" class="space-y-1">
+                <!-- Letter Header -->
+                <h4
+                    class="sticky top-0 bg-[#0b0b0d] text-xs font-semibold text-gray-500 uppercase py-2 border-b border-gray-800">
+                    {{ group.letter }}
+                </h4>
 
-        <!-- Players List -->
-        <div class="border border-gray-800 rounded-lg p-4 max-h-[400px] overflow-y-auto">
-            <div v-if="filteredMembers.length > 0" class="flex flex-col gap-3">
-                <div v-for="member in filteredMembers" :key="member.id" @click="toggleMember(member)" :class="[
-                    'px-4 py-3 rounded-lg border-2 cursor-pointer transition-all',
-                    isMemberSelected(member)
-                        ? 'bg-green-900/30 border-green-500 text-green-300'
-                        : 'bg-gray-900 border-gray-700 text-gray-300 hover:border-gray-600'
-                ]">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                            <div :class="[
-                                'w-2 h-2 rounded-full',
-                                isMemberSelected(member) ? 'bg-green-500' : 'bg-gray-500'
-                            ]"></div>
-                            <span class="text-sm font-medium">{{ member.name }}</span>
-                        </div>
-                        <svg v-if="isMemberSelected(member)" class="w-5 h-5 text-green-500" fill="currentColor"
-                            viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                clip-rule="evenodd" />
-                        </svg>
+                <!-- Members in this group -->
+                <label v-for="member in group.members" :key="member.id"
+                    class="flex items-center gap-3 p-2 hover:bg-gray-800 rounded-lg cursor-pointer transition-colors group">
+                    <input type="checkbox" :checked="isMemberSelected(member)" @change="toggleMember(member)"
+                        class="w-4 h-4 rounded border-gray-600 bg-gray-800 text-indigo-600 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-0 cursor-pointer" />
+
+                    <!-- Member name -->
+                    <span class="flex-1 text-sm text-gray-200 group-hover:text-white transition-colors">
+                        {{ member.name }}
+                    </span>
+
+                    <!-- Class and Level -->
+                    <div class="flex items-center gap-2 text-xs">
+                        <span class="text-gray-400 capitalize">{{ member.class }}</span>
+                        <span class="text-gray-500">•</span>
+                        <span class="text-gray-500">Lv. {{ member.level }}</span>
                     </div>
-                </div>
+                </label>
             </div>
 
             <!-- Empty state -->
-            <div v-else class="text-center py-12 text-gray-500">
-                <svg class="mx-auto h-10 w-10 text-gray-600 mb-3" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                <p class="text-sm">No players found</p>
-            </div>
+            <p v-if="groupedMembers.length === 0" class="text-center text-gray-500 py-8">
+                No members available
+            </p>
         </div>
     </div>
 </template>
