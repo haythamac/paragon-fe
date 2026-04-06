@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 const props = defineProps({
     allMembers: {
@@ -13,6 +13,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue'])
+
 
 // Group members alphabetically
 const groupedMembers = computed(() => {
@@ -66,6 +67,7 @@ const clearAll = () => {
 
 <template>
     <div class="space-y-4">
+
         <!-- Header with controls -->
         <div class="flex items-center justify-between">
             <p class="text-sm text-gray-400">
@@ -119,4 +121,5 @@ const clearAll = () => {
             </p>
         </div>
     </div>
+
 </template>

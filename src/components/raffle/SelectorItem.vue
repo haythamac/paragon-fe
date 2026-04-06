@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
+import WarehouseImporter from './WarehouseImporter.vue'
 
 const props = defineProps({
     allItems: {
@@ -23,8 +24,8 @@ const props = defineProps({
         default: 0
     }
 })
-
-const emit = defineEmits(['update:modelValue'])
+const showImporter = ref(false)
+const emit = defineEmits(['update:modelValue', 'refresh-items'])
 
 const itemSearch = ref('')
 const itemTab = ref('all') // 'all', 'tradeable', 'non-tradeable'
@@ -44,6 +45,22 @@ const rarityMap = {
     rare: '[R]',
     epic: '[E]',
     legendary: '[L]'
+}
+
+const handleItemsImported = (items) => {
+    // Add imported items to selectedItems
+    items.forEach(item => {
+        if (!props.modelValue.some(i => i.id === item.id)) {
+            const newItems = [...props.modelValue, { ...item, quantity: item.quantity || 1 }]
+            emit('update:modelValue', newItems)
+        }
+    })
+
+    toast.success(`Added ${items.length} items from warehouse`)
+}
+
+const handleRefreshItems = () => {
+    emit('refresh-items')
 }
 
 function rarityClass(rarity) {
@@ -146,6 +163,18 @@ const clearAllItems = () => {
 
 <template>
     <div class="space-y-4">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-semibold text-gray-300">Select Items</h3>
+            <button @click="showImporter = true"
+                class="flex items-center gap-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+                Import from Warehouse
+            </button>
+        </div>
+
         <div class="flex items-center justify-between">
             <p class="text-sm font-medium text-gray-300">
                 Items selected: {{ modelValue.length }}
@@ -254,8 +283,7 @@ const clearAllItems = () => {
 
             <!-- Empty state -->
             <div v-else class="text-center py-12 text-gray-500">
-                <svg class="mx-auto h-10 w-10 text-gray-600 mb-3" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
+                <svg class="mx-auto h-10 w-10 text-gray-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                 </svg>
@@ -273,5 +301,10 @@ const clearAllItems = () => {
                 <p>Items: <span class="text-white">{{ modelValue.length }}</span></p>
             </div>
         </div>
+
+        <WarehouseImporter v-model="showImporter" :existing-items="props.allItems" @items-selected="handleItemsImported"
+        @refresh-items="handleRefreshItems" />
     </div>
+
+    
 </template>

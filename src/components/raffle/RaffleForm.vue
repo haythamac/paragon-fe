@@ -381,7 +381,7 @@ const close = () => {
                             <!-- Step 3: Items -->
                             <SelectorItem v-show="currentStep === 2" :allItems="allItems" v-model="selectedItems"
                                 :raffleName="raffleName" :raffleDate="raffleDate"
-                                :playerCount="selectedMembers.length" />
+                                :playerCount="selectedMembers.length" @refresh-items="fetchItems"/>
 
                             <div class="flex justify-between gap-2 pt-6 mt-6 border-t border-gray-800">
                                 <button type="button" @click="prevStep" :disabled="!canGoBack"
